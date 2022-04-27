@@ -4,7 +4,8 @@
   "private": true,
   "description": "Проект «Большое путешествие» от HTML Academy",
   "scripts": {
-    "lint": "eslint src/"
+    "lint": "eslint src/",
+    "build": "webpack --mode production"
   },
   "devDependencies": {
     "copy-webpack-plugin": "10.2.4",
