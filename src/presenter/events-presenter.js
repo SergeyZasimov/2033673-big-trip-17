@@ -3,6 +3,7 @@ import { render } from '../render.js';
 import EventsListView from '../views/events-list-view.js';
 import SortView from '../views/sort-view.js';
 import EventView from '../views/event-view.js';
+import EventItemView from '../views/event-list-item.js';
 
 
 const eventsNumber = 3;
@@ -15,8 +16,11 @@ export default class EventsPresenter {
 
     render(new SortView(), this.eventsContainer);
     render(this.eventsListComponent, this.eventsContainer);
+
     for (let i = 0; i < eventsNumber; i++) {
-      render(new EventView(), this.eventsListComponent.getElement());
+      const listItem = new EventItemView();
+      render(listItem, this.eventsListComponent.getElement());
+      render(new EventView(), listItem.getElement());
     }
   }
 
