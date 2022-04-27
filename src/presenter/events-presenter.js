@@ -1,4 +1,4 @@
-import { createElement, render } from '../render.js';
+import { render } from '../render.js';
 
 import EventsListView from '../views/events-list-view.js';
 import SortView from '../views/sort-view.js';
