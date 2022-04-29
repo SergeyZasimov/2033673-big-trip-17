@@ -11,6 +11,15 @@ const getHumanizeDay = (date) => dayjs(date).format('MMM D');
 const getHumanizeTime = (date) => dayjs(date).format('HH:mm');
 const getMarkupDate = (date) => dayjs(date).format('YYYY-MM-DD');
 const getMarkupTime = (date) => dayjs(date).format('YYYY-MM-DDTHH:mm');
-const getDuration = (beginDate, endDate) => dayjs(endDate).diff(beginDate, 'm');
+const getDuration = (beginDate, endDate) => {
+  const duration = dayjs(endDate).diff(beginDate, 'm');
+  if (duration > (24 * 60)) {
+    return `${ (duration / (24 * 60)).toFixed() }D ${ (duration / 60).toFixed() }H ${ duration % 60 }M`;
+  }
+  if (duration > 60) {
+    return `${ (duration / 60).toFixed() }H ${ duration % 60 }M`;
+  }
+  return `${ duration }M`;
+};
 
 export { getRandomInteger, getHumanizeDay, getHumanizeTime, getMarkupDate, getMarkupTime, getDuration };

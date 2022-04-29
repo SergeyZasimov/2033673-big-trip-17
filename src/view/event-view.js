@@ -29,7 +29,7 @@ const createEventTemplate = (event) => {
           &mdash;
           <time class="event__end-time" datetime=${ markupEndTime }>${ eventEndTime }</time>
         </p>
-        <p class="event__duration">${ duration }M</p>
+        <p class="event__duration">${ duration }</p>
       </div>
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${ basePrice }</span>
