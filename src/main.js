@@ -1,6 +1,6 @@
 import { render, RenderPosition } from './render.js';
-import InfoView from './views/info-view.js';
-import FiltersView from './views/filters-view.js';
+import InfoView from './view/info-view.js';
+import FiltersView from './view/filters-view.js';
 import EventsPresenter from './presenter/events-presenter.js';
 
 const headerContainer = document.querySelector('.page-header');
