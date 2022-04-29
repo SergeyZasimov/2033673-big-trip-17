@@ -1,12 +1,15 @@
 import { createElement } from '../render.js';
 
-const createEventTemplate = () => (
-  `<div class="event">
+const createEventTemplate = (event) => {
+  const {type, destination} = event;
+
+  return (
+    `<div class="event">
       <time class="event__date" datetime="2019-03-18">MAR 18</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">Taxi Amsterdam</h3>
+      <h3 class="event__title">${type} ${destination}</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="2019-03-18T10:30">10:30</time>
@@ -36,11 +39,16 @@ const createEventTemplate = () => (
         <span class="visually-hidden">Open event</span>
       </button>
   </div>`
-);
+  );
+};
 
 export default class EventView {
+  constructor(point) {
+    this.point = point;
+  }
+
   getTemplate() {
-    return createEventTemplate();
+    return createEventTemplate(this.point);
   }
 
   getElement() {

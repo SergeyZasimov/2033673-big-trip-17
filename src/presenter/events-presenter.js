@@ -21,7 +21,7 @@ export default class EventsPresenter {
     this.createEvent(new EventEditView());
 
     for (let i = 0; i < this.events.length; i++) {
-      this.createEvent(new EventView());
+      this.createEvent(new EventView(this.events[i]));
     }
   }
 
