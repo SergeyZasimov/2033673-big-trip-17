@@ -1,3 +1,8 @@
+import { getRandomInteger } from '../utils.js';
+import { getSettings } from '../settings.js';
+
+const { EVENT_TYPES } = getSettings();
+
 const generateEvent = () => ({
   'base_price': 1100,
   'date_from': '2019-07-10T22:55:56.845Z',
@@ -6,7 +11,7 @@ const generateEvent = () => ({
   'id': '0',
   'is_favorite': false,
   'offers': '',
-  'type': 'bus'
+  'type': EVENT_TYPES[getRandomInteger(0, (EVENT_TYPES.length - 1))]
 });
 
 export { generateEvent };
