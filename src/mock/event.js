@@ -1,17 +1,17 @@
 import { getRandomInteger } from '../utils.js';
-import { getSettings } from '../settings.js';
+import {getTestSettings} from './testSettings.js';
 
-const { EVENT_TYPES, TEST_EVENTS_NUMBER } = getSettings();
+const { TEST_EVENT_TYPES, TEST_EVENTS_NUMBER, TEST_DATE_FROM, TEST_DATE_TO } = getTestSettings();
 
 const generateEvent = () => ({
   'basePrice': getRandomInteger(0, 100),
-  'dateFrom': '2019-07-10T22:55:56.845Z',
-  'dateTo': '2019-07-11T11:22:13.375Z',
+  'dateFrom': TEST_DATE_FROM[0],
+  'dateTo': TEST_DATE_TO[0],
   'destination': '',
   'id': getRandomInteger(0, (TEST_EVENTS_NUMBER - 1)),
   'isFavorite': Boolean(getRandomInteger()),
   'offers': '',
-  'type': EVENT_TYPES[getRandomInteger(0, (EVENT_TYPES.length - 1))]
+  'type': TEST_EVENT_TYPES[getRandomInteger(0, (TEST_EVENT_TYPES.length - 1))]
 });
 
 export { generateEvent };

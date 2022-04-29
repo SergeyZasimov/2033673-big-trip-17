@@ -1,26 +1,35 @@
 import { createElement } from '../render.js';
+import { getDuration, getHumanizeDay, getHumanizeTime, getMarkupDate, getMarkupTime } from '../utils';
 
 const createEventTemplate = (event) => {
-  const { type, destination, basePrice, isFavorite } = event;
+  const { type, destination, basePrice, isFavorite, dateFrom, dateTo } = event;
 
   const favoriteClassName = isFavorite
     ? 'event__favorite-btn event__favorite-btn--active'
     : 'event__favorite-btn';
 
+  const eventDate = getHumanizeDay(dateFrom);
+  const eventStartTime = getHumanizeTime(dateFrom);
+  const eventEndTime = getHumanizeTime(dateTo);
+  const markupDate = getMarkupDate(dateFrom);
+  const markupStartTime = getMarkupTime(dateFrom);
+  const markupEndTime = getMarkupTime(dateTo);
+  const duration = getDuration(dateFrom, dateTo);
+
   return (
     `<div class="event">
-      <time class="event__date" datetime="2019-03-18">MAR 18</time>
+      <time class="event__date" datetime=${ markupDate }>${ eventDate }</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
       </div>
       <h3 class="event__title">${ type } ${ destination }</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="2019-03-18T10:30">10:30</time>
+          <time class="event__start-time" datetime=${ markupStartTime }>${ eventStartTime }</time>
           &mdash;
-          <time class="event__end-time" datetime="2019-03-18T11:00">11:00</time>
+          <time class="event__end-time" datetime=${ markupEndTime }>${ eventEndTime }</time>
         </p>
-        <p class="event__duration">30M</p>
+        <p class="event__duration">${ duration }M</p>
       </div>
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${ basePrice }</span>
