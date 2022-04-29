@@ -5,8 +5,8 @@ const { TEST_EVENT_TYPES, TEST_EVENTS_NUMBER, TEST_DATE_FROM, TEST_DATE_TO } = g
 
 const generateEvent = () => ({
   'basePrice': getRandomInteger(0, 100),
-  'dateFrom': TEST_DATE_FROM[0],
-  'dateTo': TEST_DATE_TO[0],
+  'dateFrom': TEST_DATE_FROM[getRandomInteger(0, TEST_DATE_FROM.length - 1)],
+  'dateTo': TEST_DATE_TO[getRandomInteger(0, TEST_DATE_TO.length - 1)],
   'destination': '',
   'id': getRandomInteger(0, (TEST_EVENTS_NUMBER - 1)),
   'isFavorite': Boolean(getRandomInteger()),
