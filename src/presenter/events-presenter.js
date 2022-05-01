@@ -18,12 +18,11 @@ export default class EventsPresenter {
     render(new SortView(), this.eventsContainer);
     render(this.eventsListComponent, this.eventsContainer);
 
-    this.createEvent(new EventEditView());
+    this.createEvent(new EventEditView(this.events[0]));
 
     for (let i = 0; i < this.events.length; i++) {
       this.createEvent(new EventView(this.events[i]));
     }
-    console.log(this.events);
   }
 
   createEvent(content) {
