@@ -21,6 +21,6 @@ const getDuration = (beginDate, endDate) => {
   }
   return `${ duration }M`;
 };
-const getEditTime = (date) => dayjs(date).format('DD/MM/YY HH:mm')
+const getEditTime = (date) => dayjs(date).format('DD/MM/YY HH:mm');
 
 export { getRandomInteger, getHumanizeDay, getHumanizeTime, getMarkupDate, getMarkupTime, getDuration, getEditTime };
