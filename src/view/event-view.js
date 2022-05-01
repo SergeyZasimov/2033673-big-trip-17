@@ -35,13 +35,17 @@ const createEventTemplate = (event) => {
         &euro;&nbsp;<span class="event__price-value">${ basePrice }</span>
       </p>
       <h4 class="visually-hidden">Offers:</h4>
+      ${ event.offers ? `
       <ul class="event__selected-offers">
+        ${ event.offers.map(({ title, price }) => `
         <li class="event__offer">
-          <span class="event__offer-title">Order Uber</span>
+          <span class="event__offer-title">${ title }</span>
           &plus;&euro;&nbsp;
-          <span class="event__offer-price">20</span>
+          <span class="event__offer-price">${ price }</span>
         </li>
+        `).join('') }
       </ul>
+      ` : '' }
       <button class="${ favoriteClassName }" type="button">
         <span class="visually-hidden">Add to favorite</span>
         <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
