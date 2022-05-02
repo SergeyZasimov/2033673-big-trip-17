@@ -1,7 +1,8 @@
 import { render, RenderPosition } from './render.js';
-import InfoView from './views/info-view.js';
-import FiltersView from './views/filters-view.js';
+import InfoView from './view/info-view.js';
+import FiltersView from './view/filters-view.js';
 import EventsPresenter from './presenter/events-presenter.js';
+import EventsModel from './model/events-model.js';
 
 const headerContainer = document.querySelector('.page-header');
 const headerTripMain = headerContainer.querySelector('.trip-main');
@@ -14,4 +15,5 @@ render(new InfoView(), headerTripMain, RenderPosition.AFTERBEGIN);
 render(new FiltersView(), headerControlsFilters);
 
 const eventsPresenter = new EventsPresenter();
-eventsPresenter.init(mainTripEvents);
+const eventsModel = new EventsModel();
+eventsPresenter.init(mainTripEvents, eventsModel);
