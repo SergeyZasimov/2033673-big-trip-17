@@ -8,15 +8,16 @@ import EventEditView from '../view/event-edit-view.js';
 
 
 export default class EventsPresenter {
-  eventsListComponent = new EventsListView();
+  #eventsListComponent = null;
 
   init(eventsContainer, eventsModel) {
+    this.#eventsListComponent = new EventsListView();
     this.eventsContainer = eventsContainer;
     this.eventsModel = eventsModel;
-    this.events = [...this.eventsModel.getEvents()];
+    this.events = [...this.eventsModel.events];
 
     render(new SortView(), this.eventsContainer);
-    render(this.eventsListComponent, this.eventsContainer);
+    render(this.#eventsListComponent, this.eventsContainer);
 
     this.createEvent(new EventEditView(this.events[0]));
 
@@ -27,7 +28,7 @@ export default class EventsPresenter {
 
   createEvent(content) {
     const listItem = new EventItemView();
-    render(listItem, this.eventsListComponent.getElement());
-    render(content, listItem.getElement());
+    render(listItem, this.#eventsListComponent.element);
+    render(content, listItem.element);
   }
 }
