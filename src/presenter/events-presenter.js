@@ -36,15 +36,28 @@ export default class EventsPresenter {
       this.#eventsListComponent.element.replaceChild(eventComponent.element, eventEditComponent.element);
     };
 
+    const onEscKeyDown = (evt) => {
+      if (evt.key === 'Esc' || evt.key === 'Escape') {
+        evt.preventDefault();
+        replaceEditToEvent();
+        document.removeEventListener('keydown', onEscKeyDown);
+      }
+    };
+
     eventComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
       replaceEventToEdit();
+      document.addEventListener('keydown', onEscKeyDown);
     });
 
     eventEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
       evt.preventDefault();
       replaceEditToEvent();
+      document.removeEventListener('keydown', onEscKeyDown);
     });
 
-
+    eventEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replaceEditToEvent();
+      document.removeEventListener('keydown', onEscKeyDown);
+    });
   }
 }
