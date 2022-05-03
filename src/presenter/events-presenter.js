@@ -25,39 +25,40 @@ export default class EventsPresenter {
 
   #renderEvent(event) {
     const eventComponent = new EventView(event);
-    const eventEditComponent = new EventEditView(event);
     render(eventComponent, this.#eventsListComponent.element);
 
     const replaceEventToEdit = () => {
+      const eventEditComponent = new EventEditView(event);
       this.#eventsListComponent.element.replaceChild(eventEditComponent.element, eventComponent.element);
-    };
 
-    const replaceEditToEvent = () => {
-      this.#eventsListComponent.element.replaceChild(eventComponent.element, eventEditComponent.element);
-    };
+      const replaceEditToEvent = () => {
+        this.#eventsListComponent.element.replaceChild(eventComponent.element, eventEditComponent.element);
+      };
 
-    const onEscKeyDown = (evt) => {
-      if (evt.key === 'Esc' || evt.key === 'Escape') {
+      const onEscKeyDown = (evt) => {
+        if (evt.key === 'Esc' || evt.key === 'Escape') {
+          evt.preventDefault();
+          replaceEditToEvent();
+          document.removeEventListener('keydown', onEscKeyDown);
+        }
+      };
+
+      document.addEventListener('keydown', onEscKeyDown);
+
+      eventEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
         evt.preventDefault();
         replaceEditToEvent();
         document.removeEventListener('keydown', onEscKeyDown);
-      }
-    };
+      });
 
+      eventEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+        replaceEditToEvent();
+        document.removeEventListener('keydown', onEscKeyDown);
+      });
+
+    };
     eventComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
       replaceEventToEdit();
-      document.addEventListener('keydown', onEscKeyDown);
-    });
-
-    eventEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      replaceEditToEvent();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
-
-    eventEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replaceEditToEvent();
-      document.removeEventListener('keydown', onEscKeyDown);
     });
   }
 }
