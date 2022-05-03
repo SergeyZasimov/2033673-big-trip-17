@@ -1,8 +1,13 @@
 import { createElement } from '../render.js';
+import { offersAll } from '../mock/offer.js';
 import { getDuration, getHumanizeDay, getHumanizeTime, getMarkupDate, getMarkupTime } from '../utils';
 
 const createEventTemplate = (event) => {
   const { type, destination, basePrice, isFavorite, dateFrom, dateTo } = event;
+
+  const eventTypeOffers = (offersAll
+    .find((item) => item.type === event.type)).offers
+    .filter((item) => event.offers.includes(item.id));
 
   const favoriteClassName = isFavorite
     ? 'event__favorite-btn event__favorite-btn--active'
@@ -37,7 +42,7 @@ const createEventTemplate = (event) => {
       <h4 class="visually-hidden">Offers:</h4>
       ${ event.offers ? `
       <ul class="event__selected-offers">
-        ${ event.offers.map(({ title, price }) => `
+        ${ eventTypeOffers.map(({ title, price }) => `
         <li class="event__offer">
           <span class="event__offer-title">${ title }</span>
           &plus;&euro;&nbsp;
@@ -60,12 +65,12 @@ const createEventTemplate = (event) => {
 };
 
 export default class EventView {
-  constructor(point) {
-    this.point = point;
+  constructor(event) {
+    this.event = event;
   }
 
   getTemplate() {
-    return createEventTemplate(this.point);
+    return createEventTemplate(this.event);
   }
 
   getElement() {
