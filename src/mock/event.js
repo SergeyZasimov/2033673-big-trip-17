@@ -1,14 +1,11 @@
-import { getRandomInteger } from '../utils.js';
+import { getRandomInteger, getRandomUniqList } from '../utils.js';
 import { getTestSettings } from './testSettings.js';
-import { offers } from './offer.js';
 import { destinations } from './destination.js';
 
-const { TEST_EVENT_TYPES, TEST_EVENTS_NUMBER, TEST_DATE_FROM, TEST_DATE_TO } = getTestSettings();
+const { TEST_EVENT_TYPES, TEST_EVENTS_NUMBER, TEST_DATE_FROM, TEST_DATE_TO, TEST_OFFER_LENGTH } = getTestSettings();
 
 const generateEvent = () => {
-  const type = TEST_EVENT_TYPES[getRandomInteger(0, (TEST_EVENT_TYPES.length - 1))];
-
-  const eventOffers = offers.find((item) => item.type === type);
+  const generateOffers = getRandomUniqList(TEST_OFFER_LENGTH);
 
   return {
     basePrice: getRandomInteger(0, 100),
@@ -17,8 +14,8 @@ const generateEvent = () => {
     destination: destinations[0],
     id: getRandomInteger(0, (TEST_EVENTS_NUMBER - 1)),
     isFavorite: Boolean(getRandomInteger()),
-    offers: eventOffers ? eventOffers.offers : [],
-    type,
+    offers: generateOffers(),
+    type: TEST_EVENT_TYPES[getRandomInteger(0, (TEST_EVENT_TYPES.length - 1))],
   };
 };
 

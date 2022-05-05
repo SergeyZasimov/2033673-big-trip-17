@@ -4,9 +4,9 @@ import { getTestSettings } from '../mock/testSettings';
 const { TEST_EVENTS_NUMBER } = getTestSettings();
 
 export default class EventsModel {
-  events = Array.from({ length: TEST_EVENTS_NUMBER }, generateEvent);
+  #events = Array.from({ length: TEST_EVENTS_NUMBER }, generateEvent);
 
-  getEvents() {
-    return this.events;
+  get events() {
+    return this.#events;
   }
 }

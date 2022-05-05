@@ -1,4 +1,4 @@
-const offers = [
+const offersAll = [
   {
     type: 'taxi',
     offers: [
@@ -17,6 +17,16 @@ const offers = [
         title: 'Order Uber',
         price: 20
       },
+      {
+        id: 4,
+        title: 'Upgrade',
+        price: 25
+      },
+      {
+        id: 5,
+        title: 'Upgrade',
+        price: 20
+      },
     ],
   },
   {
@@ -32,6 +42,21 @@ const offers = [
         title: 'Switch to comfort',
         price: 100
       },
+      {
+        id: 3,
+        title: 'Upgrade',
+        price: 20
+      },
+      {
+        id: 4,
+        title: 'Upgrade',
+        price: 20
+      },
+      {
+        id: 5,
+        title: 'Upgrade',
+        price: 20
+      },
     ]
   },
   {
@@ -41,7 +66,27 @@ const offers = [
         id: 1,
         title: 'Rent a car',
         price: 200
-      }
+      },
+      {
+        id: 2,
+        title: 'Upgrade',
+        price: 20
+      },
+      {
+        id: 3,
+        title: 'Upgrade',
+        price: 20
+      },
+      {
+        id: 4,
+        title: 'Upgrade',
+        price: 20
+      },
+      {
+        id: 5,
+        title: 'Upgrade',
+        price: 20
+      },
     ]
   },
   {
@@ -51,7 +96,27 @@ const offers = [
         id: 1,
         title: 'Add breakfast',
         price: 50,
-      }
+      },
+      {
+        id: 2,
+        title: 'Upgrade',
+        price: 20
+      },
+      {
+        id: 3,
+        title: 'Upgrade',
+        price: 20
+      },
+      {
+        id: 4,
+        title: 'Upgrade',
+        price: 20
+      },
+      {
+        id: 5,
+        title: 'Upgrade',
+        price: 20
+      },
     ]
   },
   {
@@ -66,9 +131,144 @@ const offers = [
         id: 2,
         title: 'Lunch in city',
         price: 30
-      }
+      },
+      {
+        id: 3,
+        title: 'Upgrade',
+        price: 20
+      },
+      {
+        id: 4,
+        title: 'Upgrade',
+        price: 20
+      },
+      {
+        id: 5,
+        title: 'Upgrade',
+        price: 20
+      },
     ]
-  }
+  },
+  {
+    type: 'bus',
+    offers: [
+      {
+        id: 1,
+        title: 'Upgrade ',
+        price: 120
+      },
+      {
+        id: 2,
+        title: 'Choose',
+        price: 60
+      },
+      {
+        id: 3,
+        title: 'Order',
+        price: 20
+      },
+      {
+        id: 4,
+        title: 'Upgrade',
+        price: 25
+      },
+      {
+        id: 5,
+        title: 'Upgrade',
+        price: 20
+      },
+    ]
+  },
+  {
+    type: 'train',
+    offers: [
+      {
+        id: 1,
+        title: 'Upgrade ',
+        price: 120
+      },
+      {
+        id: 2,
+        title: 'Choose',
+        price: 60
+      },
+      {
+        id: 3,
+        title: 'Order',
+        price: 20
+      },
+      {
+        id: 4,
+        title: 'Upgrade',
+        price: 25
+      },
+      {
+        id: 5,
+        title: 'Upgrade',
+        price: 20
+      },
+    ]
+  },
+  {
+    type: 'ship',
+    offers: [
+      {
+        id: 1,
+        title: 'Upgrade ',
+        price: 120
+      },
+      {
+        id: 2,
+        title: 'Choose',
+        price: 60
+      },
+      {
+        id: 3,
+        title: 'Order',
+        price: 20
+      },
+      {
+        id: 4,
+        title: 'Upgrade',
+        price: 25
+      },
+      {
+        id: 5,
+        title: 'Upgrade',
+        price: 20
+      },
+    ]
+  },
+  {
+    type: 'restaurant',
+    offers: [
+      {
+        id: 1,
+        title: 'Upgrade ',
+        price: 120
+      },
+      {
+        id: 2,
+        title: 'Choose',
+        price: 60
+      },
+      {
+        id: 3,
+        title: 'Order',
+        price: 20
+      },
+      {
+        id: 4,
+        title: 'Upgrade',
+        price: 25
+      },
+      {
+        id: 5,
+        title: 'Upgrade',
+        price: 20
+      },
+    ]
+  },
 ];
 
-export { offers };
+export { offersAll };
