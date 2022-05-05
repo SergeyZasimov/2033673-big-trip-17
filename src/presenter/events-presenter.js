@@ -4,6 +4,7 @@ import EventsListView from '../view/events-list-view.js';
 import SortView from '../view/sort-view.js';
 import EventView from '../view/event-view.js';
 import EventEditView from '../view/event-edit-view.js';
+import NoEventsView from '../view/no-events-view.js';
 
 
 export default class EventsPresenter {
@@ -15,11 +16,15 @@ export default class EventsPresenter {
     this.eventsModel = eventsModel;
     this.events = [...this.eventsModel.events];
 
-    render(new SortView(), this.eventsContainer);
-    render(this.#eventsListComponent, this.eventsContainer);
+    if (!this.events.length) {
+      render(new NoEventsView(), this.eventsContainer);
+    } else {
+      render(new SortView(), this.eventsContainer);
+      render(this.#eventsListComponent, this.eventsContainer);
 
-    for (let i = 0; i < this.events.length; i++) {
-      this.#renderEvent(this.events[i]);
+      for (let i = 0; i < this.events.length; i++) {
+        this.#renderEvent(this.events[i]);
+      }
     }
   }
 
