@@ -14,6 +14,6 @@ const mainTripEvents = mainContainer.querySelector('.trip-events');
 render(new InfoView(), headerTripMain, RenderPosition.AFTERBEGIN);
 render(new FiltersView(), headerControlsFilters);
 
-const eventsPresenter = new EventsPresenter();
 const eventsModel = new EventsModel();
-eventsPresenter.init(mainTripEvents, eventsModel);
+const eventsPresenter = new EventsPresenter(mainTripEvents, eventsModel);
+eventsPresenter.init();
