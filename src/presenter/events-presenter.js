@@ -4,22 +4,35 @@ import EventsListView from '../view/events-list-view.js';
 import SortView from '../view/sort-view.js';
 import EventView from '../view/event-view.js';
 import EventEditView from '../view/event-edit-view.js';
+import NoEventsView from '../view/no-events-view.js';
 
 
 export default class EventsPresenter {
-  #eventsListComponent = null;
+  #eventsContainer = null;
+  #eventsModel = null;
+  #events = [];
+  #eventsListComponent = new EventsListView();
 
-  init(eventsContainer, eventsModel) {
-    this.#eventsListComponent = new EventsListView();
-    this.eventsContainer = eventsContainer;
-    this.eventsModel = eventsModel;
-    this.events = [...this.eventsModel.events];
+  constructor(eventsContainer, eventsModel) {
+    this.#eventsContainer = eventsContainer;
+    this.#eventsModel = eventsModel;
+  }
 
-    render(new SortView(), this.eventsContainer);
-    render(this.#eventsListComponent, this.eventsContainer);
+  init() {
+    this.#events = [...this.#eventsModel.events];
+    this.#renderEventsList();
+  }
 
-    for (let i = 0; i < this.events.length; i++) {
-      this.#renderEvent(this.events[i]);
+  #renderEventsList() {
+    if (!this.#events.length) {
+      render(new NoEventsView(), this.#eventsContainer);
+    } else {
+      render(new SortView(), this.#eventsContainer);
+      render(this.#eventsListComponent, this.#eventsContainer);
+
+      for (let i = 0; i < this.#events.length; i++) {
+        this.#renderEvent(this.#events[i]);
+      }
     }
   }
 
