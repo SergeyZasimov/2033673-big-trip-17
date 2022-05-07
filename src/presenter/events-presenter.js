@@ -58,20 +58,17 @@ export default class EventsPresenter {
 
       document.addEventListener('keydown', onEscKeyDown);
 
-      eventEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-        evt.preventDefault();
+      eventEditComponent.setFormSubmitHandler(() => {
         replaceEditToEvent();
         document.removeEventListener('keydown', onEscKeyDown);
       });
 
-      eventEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      eventEditComponent.setCloseFormHandler(() => {
         replaceEditToEvent();
         document.removeEventListener('keydown', onEscKeyDown);
       });
 
     };
-    eventComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replaceEventToEdit();
-    });
+    eventComponent.setEditClickHandler(() => replaceEventToEdit());
   }
 }
