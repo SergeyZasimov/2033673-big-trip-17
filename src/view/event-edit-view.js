@@ -1,6 +1,6 @@
-import { getEditTime } from '../utils.js';
 import { offersAll } from '../mock/offer.js';
 import AbstractView from '../framework/view/abstract-view.js';
+import { getEditTime } from '../utils/date-time.js';
 
 const DEFAULT_EVENT = {
   type: '',

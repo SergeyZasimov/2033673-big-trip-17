@@ -1,4 +1,4 @@
-import { getRandomInteger, getRandomUniqList } from '../utils.js';
+import { getRandomInteger, getRandomUniqList } from '../utils/common.js';
 import { getTestSettings } from './testSettings.js';
 import { destinations } from './destination.js';
 
