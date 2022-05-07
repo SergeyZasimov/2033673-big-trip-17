@@ -8,7 +8,8 @@ const getRandomInteger = (begin = 0, end = 1) => {
 const getRandomUniqList = (length) => {
   const resultList = [];
   return () => {
-    for (let i = 0; i < getRandomInteger(0, length); i++) {
+    const cycles = getRandomInteger(0, length);
+    for (let i = 0; i < cycles; i++) {
       let number;
       do {
         number = getRandomInteger(1, length + 1);
