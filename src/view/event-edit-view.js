@@ -1,21 +1,23 @@
-import { createElement } from '../render.js';
-import { getEditTime } from '../utils.js';
-import { offersAll } from '../mock/offer';
+import { offersAll } from '../mock/offer.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import { getEditTime } from '../utils/date-time.js';
 
-const createEventEditTemplate = (event = {}) => {
+const DEFAULT_EVENT = {
+  type: '',
+  destination: null,
+  basePrice: '',
+  dateFrom: '',
+  dateTo: '',
+  id: '',
+  offers: [],
+};
 
-  const {
-    type = '',
-    destination = null,
-    basePrice = '',
-    dateFrom = '',
-    dateTo = '',
-    id = '',
-    offers: eventOffers = [],
-  } = event;
+const createEventEditTemplate = (event) => {
+
+  const { type, destination, basePrice, dateFrom, dateTo, id, offers } = event;
 
   const eventTypeOffers = (offersAll
-    .find((item) => item.type === event.type)).offers;
+    .find((item) => item.type === type)).offers;
 
   const eventStartTime = getEditTime(dateFrom);
   const eventEndTime = getEditTime(dateTo);
@@ -129,7 +131,7 @@ const createEventEditTemplate = (event = {}) => {
               id="event-offer-luggage-${ item.id }"
               type="checkbox"
               name="event-offer-luggage"
-              ${ eventOffers.includes(item.id) ? 'checked' : '' }>
+              ${ offers.includes(item.id) ? 'checked' : '' }>
             <label class="event__offer-label" for="event-offer-luggage-${ item.id }">
               <span class="event__offer-title">${ item.title }</span>
               &plus;&euro;&nbsp;
@@ -150,11 +152,11 @@ const createEventEditTemplate = (event = {}) => {
   );
 };
 
-export default class EventEditView {
+export default class EventEditView extends AbstractView {
   #event = null;
-  #element = null;
 
-  constructor(event) {
+  constructor(event = DEFAULT_EVENT) {
+    super();
     this.#event = event;
   }
 
@@ -162,14 +164,22 @@ export default class EventEditView {
     return createEventEditTemplate(this.#event);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  };
 
-  removeElement() {
-    this.#element = null;
-  }
+  setCloseFormHandler = (callback) => {
+    this._callback.closeForm = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeFormHandler);
+  };
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  };
+
+  #closeFormHandler = () => {
+    this._callback.closeForm();
+  };
 }
