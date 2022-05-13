@@ -12,4 +12,8 @@ const filters = {
   [FILTER_TYPE.PAST]: (events) => events.some((event) => dayjs(event.dateFrom).isAfter(dayjs()))
 };
 
-export { filters };
+const generateFilters = (events) => Object
+  .entries(filters)
+  .map(([name, filterIsAvailable]) => ({ name, isAvailable: filterIsAvailable(events) }));
+
+export { generateFilters };

@@ -3,7 +3,7 @@ import InfoView from './view/info-view.js';
 import FiltersView from './view/filters-view.js';
 import EventsPresenter from './presenter/events-presenter.js';
 import EventsModel from './model/events-model.js';
-import { generateFilters } from './mock/filter';
+import { generateFilters } from './utils/filter';
 
 const headerContainer = document.querySelector('.page-header');
 const headerTripMain = headerContainer.querySelector('.trip-main');
