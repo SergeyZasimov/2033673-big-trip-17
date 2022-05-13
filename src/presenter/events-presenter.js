@@ -1,10 +1,9 @@
-import { render } from '../render.js';
-
 import EventsListView from '../view/events-list-view.js';
 import SortView from '../view/sort-view.js';
 import EventView from '../view/event-view.js';
 import EventEditView from '../view/event-edit-view.js';
 import NoEventsView from '../view/no-events-view.js';
+import { RenderPosition, render } from '../framework/render';
 
 
 export default class EventsPresenter {
@@ -18,25 +17,20 @@ export default class EventsPresenter {
     this.#eventsModel = eventsModel;
   }
 
-  init() {
+  init = () => {
     this.#events = [...this.#eventsModel.events];
     this.#renderEventsList();
-  }
+  };
 
-  #renderEventsList() {
-    if (!this.#events.length) {
-      render(new NoEventsView(), this.#eventsContainer);
-    } else {
-      render(new SortView(), this.#eventsContainer);
-      render(this.#eventsListComponent, this.#eventsContainer);
+  #renderSort = () => {
+    render(new SortView(), this.#eventsContainer, RenderPosition.AFTERBEGIN);
+  };
 
-      for (let i = 0; i < this.#events.length; i++) {
-        this.#renderEvent(this.#events[i]);
-      }
-    }
-  }
+  #renderNoEvents = () => {
+    render(new NoEventsView(), this.#eventsContainer, RenderPosition.AFTERBEGIN);
+  };
 
-  #renderEvent(event) {
+  #renderEvent = (event) => {
     const eventComponent = new EventView(event);
     render(eventComponent, this.#eventsListComponent.element);
 
@@ -70,5 +64,18 @@ export default class EventsPresenter {
 
     };
     eventComponent.setEditClickHandler(() => replaceEventToEdit());
-  }
+  };
+
+  #renderEventsList = () => {
+    if (!this.#events.length) {
+      this.#renderNoEvents();
+    } else {
+      this.#renderSort();
+      render(this.#eventsListComponent, this.#eventsContainer);
+
+      for (let i = 0; i < this.#events.length; i++) {
+        this.#renderEvent(this.#events[i]);
+      }
+    }
+  };
 }
