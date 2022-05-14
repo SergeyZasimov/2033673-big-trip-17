@@ -1,9 +1,8 @@
 import EventsListView from '../view/events-list-view.js';
 import SortView from '../view/sort-view.js';
-import EventView from '../view/event-view.js';
-import EventEditView from '../view/event-edit-view.js';
 import NoEventsView from '../view/no-events-view.js';
-import { RenderPosition, render } from '../framework/render';
+import { RenderPosition, render } from '../framework/render.js';
+import EventPresenter from './event-presenter.js';
 
 
 export default class EventsPresenter {
@@ -31,39 +30,8 @@ export default class EventsPresenter {
   };
 
   #renderEvent = (event) => {
-    const eventComponent = new EventView(event);
-    render(eventComponent, this.#eventsListComponent.element);
-
-    const replaceEventToEdit = () => {
-      const eventEditComponent = new EventEditView(event);
-      this.#eventsListComponent.element.replaceChild(eventEditComponent.element, eventComponent.element);
-
-      const replaceEditToEvent = () => {
-        this.#eventsListComponent.element.replaceChild(eventComponent.element, eventEditComponent.element);
-      };
-
-      const onEscKeyDown = (evt) => {
-        if (evt.key === 'Esc' || evt.key === 'Escape') {
-          evt.preventDefault();
-          replaceEditToEvent();
-          document.removeEventListener('keydown', onEscKeyDown);
-        }
-      };
-
-      document.addEventListener('keydown', onEscKeyDown);
-
-      eventEditComponent.setFormSubmitHandler(() => {
-        replaceEditToEvent();
-        document.removeEventListener('keydown', onEscKeyDown);
-      });
-
-      eventEditComponent.setCloseFormHandler(() => {
-        replaceEditToEvent();
-        document.removeEventListener('keydown', onEscKeyDown);
-      });
-
-    };
-    eventComponent.setEditClickHandler(() => replaceEventToEdit());
+    const eventPresenter = new EventPresenter(this.#eventsListComponent.element);
+    eventPresenter.init(event);
   };
 
   #renderEventsList = () => {
