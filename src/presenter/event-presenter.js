@@ -1,4 +1,4 @@
-import { render, replace } from '../framework/render.js';
+import { remove, render, replace } from '../framework/render.js';
 import EventView from '../view/event-view.js';
 import EventEditView from '../view/event-edit-view.js';
 
@@ -17,10 +17,23 @@ export default class EventPresenter {
 
   init = (event) => {
     this.#event = event;
+
+    const prevEventComponent = this.#eventComponent;
+
     this.#eventComponent = new EventView(this.#event);
     this.#eventComponent.setEditClickHandler(this.#handleEditClick);
     this.#eventComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
-    render(this.#eventComponent, this.#eventsListContainer);
+
+    if (prevEventComponent === null) {
+      render(this.#eventComponent, this.#eventsListContainer);
+      return;
+    }
+
+    if (this.#eventsListContainer.contains(prevEventComponent.element)) {
+      replace(this.#eventComponent, prevEventComponent);
+    }
+
+    remove(prevEventComponent);
   };
 
   #replaceEventToEdit = () => {
@@ -61,5 +74,5 @@ export default class EventPresenter {
 
   #handleFavoriteClick = () => {
     this.#updateEvent({ ...this.#event, isFavorite: !this.#event.isFavorite });
-  }
+  };
 }
