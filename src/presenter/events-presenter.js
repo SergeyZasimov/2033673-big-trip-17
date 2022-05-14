@@ -10,6 +10,7 @@ export default class EventsPresenter {
   #eventsModel = null;
   #events = [];
   #eventsListComponent = new EventsListView();
+  #eventsDict = new Map();
 
   constructor(eventsContainer, eventsModel) {
     this.#eventsContainer = eventsContainer;
@@ -32,6 +33,7 @@ export default class EventsPresenter {
   #renderEvent = (event) => {
     const eventPresenter = new EventPresenter(this.#eventsListComponent.element);
     eventPresenter.init(event);
+    this.#eventsDict.set(event.id, eventPresenter);
   };
 
   #renderEventsList = () => {
