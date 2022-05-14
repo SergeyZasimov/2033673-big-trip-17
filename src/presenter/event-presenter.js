@@ -8,15 +8,18 @@ export default class EventPresenter {
   #eventEditComponent = null;
   #eventsListContainer = null;
   #event = null;
+  #updateEvent = null;
 
-  constructor(eventsListContainer) {
+  constructor(eventsListContainer, updateEvent) {
     this.#eventsListContainer = eventsListContainer;
+    this.#updateEvent = updateEvent;
   }
 
   init = (event) => {
     this.#event = event;
     this.#eventComponent = new EventView(this.#event);
     this.#eventComponent.setEditClickHandler(this.#handleEditClick);
+    this.#eventComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     render(this.#eventComponent, this.#eventsListContainer);
   };
 
@@ -27,7 +30,6 @@ export default class EventPresenter {
     this.#eventEditComponent.setCloseFormHandler(this.#handleCloseForm);
 
     document.addEventListener('keydown', this.#onEscKeyDown);
-
     replace(this.#eventEditComponent, this.#eventComponent);
   };
 
@@ -56,4 +58,8 @@ export default class EventPresenter {
       document.removeEventListener('keydown', this.#onEscKeyDown);
     }
   };
+
+  #handleFavoriteClick = () => {
+    this.#updateEvent({ ...this.#event, isFavorite: !this.#event.isFavorite });
+  }
 }

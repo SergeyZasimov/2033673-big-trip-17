@@ -3,6 +3,7 @@ import SortView from '../view/sort-view.js';
 import NoEventsView from '../view/no-events-view.js';
 import { RenderPosition, render } from '../framework/render.js';
 import EventPresenter from './event-presenter.js';
+import { updateItemList } from '../utils/common';
 
 
 export default class EventsPresenter {
@@ -31,7 +32,7 @@ export default class EventsPresenter {
   };
 
   #renderEvent = (event) => {
-    const eventPresenter = new EventPresenter(this.#eventsListComponent.element);
+    const eventPresenter = new EventPresenter(this.#eventsListComponent.element, this.#handleEventUpdate);
     eventPresenter.init(event);
     this.#eventsDict.set(event.id, eventPresenter);
   };
@@ -47,5 +48,10 @@ export default class EventsPresenter {
         this.#renderEvent(this.#events[i]);
       }
     }
+  };
+
+  #handleEventUpdate = (updatedEvent) => {
+    this.#events = updateItemList(this.#events, updatedEvent);
+    this.#eventsDict.get(updatedEvent.id).init(updatedEvent);
   };
 }
