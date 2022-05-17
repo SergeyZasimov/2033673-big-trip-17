@@ -52,6 +52,11 @@ export default class EventPresenter {
     }
   };
 
+  destroy = () => {
+    this.resetView();
+    remove(this.#eventComponent);
+  };
+
   #replaceEventToEdit = () => {
     this.#eventEditComponent = new EventEditView(this.#event);
 
