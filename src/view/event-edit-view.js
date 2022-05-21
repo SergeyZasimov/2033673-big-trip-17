@@ -1,5 +1,5 @@
 import { offersAll } from '../mock/offer.js';
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getEditTime } from '../utils/date-time.js';
 
 const DEFAULT_EVENT = {
@@ -12,15 +12,12 @@ const DEFAULT_EVENT = {
   offers: [],
 };
 
-const createEventEditTemplate = (event) => {
+const createEventEditTemplate = (state) => {
 
-  const { type, destination, basePrice, dateFrom, dateTo, id, offers } = event;
+  const { type, destination, basePrice, dateFrom, dateTo, id, offers } = state;
 
   const eventTypeOffers = (offersAll
     .find((item) => item.type === type)).offers;
-
-  const eventStartTime = getEditTime(dateFrom);
-  const eventEndTime = getEditTime(dateTo);
 
   return (
     `<li class="trip-events__item">
@@ -99,10 +96,10 @@ const createEventEditTemplate = (event) => {
 
       <div class="event__field-group  event__field-group--time">
         <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-${ id }" type="text" name="event-start-time" value="${ eventStartTime }">
+        <input class="event__input  event__input--time" id="event-start-time-${ id }" type="text" name="event-start-time" value="${ getEditTime(dateFrom) }">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-${ id }" type="text" name="event-end-time" value="${ eventEndTime }">
+        <input class="event__input  event__input--time" id="event-end-time-${ id }" type="text" name="event-end-time" value="${ getEditTime(dateTo) }">
       </div>
 
       <div class="event__field-group  event__field-group--price">
@@ -152,17 +149,20 @@ const createEventEditTemplate = (event) => {
   );
 };
 
-export default class EventEditView extends AbstractView {
-  #event = null;
+export default class EventEditView extends AbstractStatefulView {
 
   constructor(event = DEFAULT_EVENT) {
     super();
-    this.#event = event;
+    this._state = EventEditView.convertEventToState(event);
   }
 
   get template() {
-    return createEventEditTemplate(this.#event);
+    return createEventEditTemplate(this._state);
   }
+
+  static convertEventToState = (event) => ({ ...event });
+
+  static convertStateToTask = (state) => ({ ...state });
 
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
@@ -181,5 +181,8 @@ export default class EventEditView extends AbstractView {
 
   #closeFormHandler = () => {
     this._callback.closeForm();
+  };
+
+  _restoreHandlers = () => {
   };
 }
