@@ -154,10 +154,7 @@ export default class EventEditView extends AbstractStatefulView {
   constructor(event = DEFAULT_EVENT) {
     super();
     this._state = EventEditView.convertEventToState(event);
-
-    this.element.querySelector('.event__type-list').addEventListener('change', this.#changeTypeHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('focus', this.#focusDestinationHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('input', this.#inputDestinationHandler);
+    this.#setInnerHandlers();
   }
 
   get template() {
@@ -168,6 +165,12 @@ export default class EventEditView extends AbstractStatefulView {
 
   static convertStateToTask = (state) => ({ ...state });
 
+  _restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setCloseFormHandler(this._callback.closeForm);
+  };
+
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
@@ -176,6 +179,13 @@ export default class EventEditView extends AbstractStatefulView {
   setCloseFormHandler = (callback) => {
     this._callback.closeForm = callback;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeFormHandler);
+  };
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('.event__type-list').addEventListener('change', this.#changeTypeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('focus', this.#focusDestinationHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('input', this.#inputDestinationHandler);
+
   };
 
   #formSubmitHandler = (evt) => {
@@ -208,8 +218,5 @@ export default class EventEditView extends AbstractStatefulView {
     this._setState({
       destination: evt.target.value
     });
-  };
-
-  _restoreHandlers = () => {
   };
 }
