@@ -24,9 +24,9 @@ const createEventEditTemplate = (state) => {
       <form class="event event--edit" action="#" method="post">
     <header class="event__header">
       <div class="event__type-wrapper">
-        <label class="event__type  event__type-btn" for="event-type-toggle-1">
+        <label class="event__type  event__type-btn" for="event-type-toggle-${ id }">
           <span class="visually-hidden">Choose event type</span>
-          <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+          <img class="event__type-icon" width="17" height="17" src="img/icons/${ type }.png" alt="Event type icon">
         </label>
         <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${ id }" type="checkbox">
 
@@ -36,7 +36,7 @@ const createEventEditTemplate = (state) => {
 
             <div class="event__type-item">
               <input id="event-type-taxi-${ id }" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-              <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
+              <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-${ id }">Taxi</label>
             </div>
 
             <div class="event__type-item">
@@ -83,10 +83,10 @@ const createEventEditTemplate = (state) => {
       </div>
 
       <div class="event__field-group  event__field-group--destination">
-        <label class="event__label  event__type-output" for="event-destination-1">
+        <label class="event__label  event__type-output" for="event-destination-${ id }">
           ${ type }
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-${ id }" type="text" name="event-destination" value="${ destination.name }" list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-${ id }" type="text" name="event-destination" value="${ destination.name }" list="destination-list-${ id }">
         <datalist id="destination-list-${ id }">
           <option value="Amsterdam"></option>
           <option value="Geneva"></option>
@@ -154,6 +154,10 @@ export default class EventEditView extends AbstractStatefulView {
   constructor(event = DEFAULT_EVENT) {
     super();
     this._state = EventEditView.convertEventToState(event);
+
+    this.element.querySelector('.event__type-list').addEventListener('change', this.#changeTypeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('focus', this.#focusDestinationHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('input', this.#inputDestinationHandler);
   }
 
   get template() {
@@ -181,6 +185,29 @@ export default class EventEditView extends AbstractStatefulView {
 
   #closeFormHandler = () => {
     this._callback.closeForm();
+  };
+
+  #changeTypeHandler = (evt) => {
+    evt.preventDefault();
+    if (evt.target.name !== 'event-type') {
+      return;
+    }
+
+    this.updateElement({
+      type: evt.target.value
+    });
+  };
+
+  #focusDestinationHandler = (evt) => {
+    evt.preventDefault();
+    evt.target.value = '';
+  };
+
+  #inputDestinationHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({
+      destination: evt.target.value
+    });
   };
 
   _restoreHandlers = () => {
