@@ -1,4 +1,5 @@
 import { offersAll } from '../mock/offer.js';
+import { destinations } from '../mock/destination.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getEditTime } from '../utils/date-time.js';
 import { getSettings } from '../utils/settings.js';
@@ -11,6 +12,8 @@ const createEventEditTemplate = (state) => {
 
   const eventTypeOffers = (offersAll
     .find((item) => item.type === type)).offers;
+
+  const eventDestination = destinations.find((item) => item.name === destination);
 
   const capitalise = (word) => word.slice(0, 1).toUpperCase() + word.slice(1);
 
@@ -47,7 +50,7 @@ const createEventEditTemplate = (state) => {
         <label class="event__label  event__type-output" for="event-destination-${ id }">
           ${ type }
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-${ id }" type="text" name="event-destination" value="${ destination.name }" list="destination-list-${ id }">
+        <input class="event__input  event__input--destination" id="event-destination-${ id }" type="text" name="event-destination" value="${ eventDestination.name }" list="destination-list-${ id }" autocomplete="off">
         <datalist id="destination-list-${ id }">
           <option value="Amsterdam"></option>
           <option value="Geneva"></option>
@@ -102,7 +105,19 @@ const createEventEditTemplate = (state) => {
 
       <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${ destination.description }</p>
+        <p class="event__destination-description">${ eventDestination.description }</p>
+        <div class="event__photos-container">
+          <div class="event__photos-tape">
+
+    ${ eventDestination.pictures.length !== 0
+      ? eventDestination.pictures.map((image) => (
+        `<img class="event__photo" src="${ image.src }" alt="${ image.description }">`
+      )).join('')
+      : ''
+    }
+
+          </div>
+        </div>
       </section>
     </section>
   </form>
@@ -145,7 +160,7 @@ export default class EventEditView extends AbstractStatefulView {
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-list').addEventListener('change', this.#changeTypeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('focus', this.#focusDestinationHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('input', this.#inputDestinationHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeDestinationHandler);
 
   };
 
@@ -175,9 +190,9 @@ export default class EventEditView extends AbstractStatefulView {
     evt.target.value = '';
   };
 
-  #inputDestinationHandler = (evt) => {
+  #changeDestinationHandler = (evt) => {
     evt.preventDefault();
-    this._setState({
+    this.updateElement({
       destination: evt.target.value
     });
   };
