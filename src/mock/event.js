@@ -1,6 +1,5 @@
 import { getRandomInteger, getRandomUniqList } from '../utils/common.js';
 import { getTestSettings } from './testSettings.js';
-import { destinations } from './destination.js';
 import { nanoid } from 'nanoid';
 
 const { TEST_EVENT_TYPES, TEST_EVENTS_NUMBER, TEST_DATE_FROM, TEST_DATE_TO, TEST_OFFER_LENGTH, TEST_DESTINATIONS } = getTestSettings();
