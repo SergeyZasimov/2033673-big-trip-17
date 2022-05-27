@@ -1,12 +1,7 @@
 import { remove, render, replace } from '../framework/render.js';
 import EventView from '../view/event-view.js';
 import EventEditView from '../view/event-edit-view.js';
-
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
+import {Mode} from '../utils/settings.js';
 
 export default class EventPresenter {
   #eventComponent = null;

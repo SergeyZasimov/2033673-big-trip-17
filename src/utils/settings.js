@@ -18,5 +18,16 @@ const SortType = {
   OFFERS: 'offers'
 };
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
 
-export { EVENT_TYPES, DEFAULT_EVENT, SortType };
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PAST: 'past'
+};
+
+
+export { EVENT_TYPES, DEFAULT_EVENT, SortType, Mode, FilterType };
