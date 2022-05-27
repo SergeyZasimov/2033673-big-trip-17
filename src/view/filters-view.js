@@ -10,9 +10,9 @@ const createFiltersTemplate = (filters) => (
                type="radio"
                name="trip-filter"
                value="${ name }"
-               ${ isAvailable ? '' : 'disabled' }
+               ${ !isAvailable ? 'disabled' : '' }
                ${ name === 'everything' ? 'checked' : '' }>
-          <label class="trip-filters__filter-label" htmlFor="filter-${ name }">${ name }</label>
+          <label class="trip-filters__filter-label" for="filter-${ name }">${ name }</label>
       </div>`
   )).join('') }
     <button class="visually-hidden" type="submit">Accept filter</button>

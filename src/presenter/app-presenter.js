@@ -10,14 +10,16 @@ import { SortType } from '../utils/settings.js';
 export default class AppPresenter {
   #eventsContainer = null;
   #eventsModel = null;
+  #filterModel = null;
   #eventsListComponent = new EventsListView();
   #eventsDict = new Map();
   #sortComponent = new SortView();
   #currentSortType = SortType.DEFAULT;
 
-  constructor(eventsContainer, eventsModel) {
+  constructor(eventsContainer, eventsModel, filterModel) {
     this.#eventsContainer = eventsContainer;
     this.#eventsModel = eventsModel;
+    this.#filterModel = filterModel;
   }
 
   get events() {
@@ -87,6 +89,10 @@ export default class AppPresenter {
     this.#currentSortType = sortType;
     this.#clearEventsList();
     this.#renderEventsList();
+  };
+
+  #handleFilterTypeChange = (filterType) => {
+    this.#filterModel.filterType = filterType;
   };
 
 }
