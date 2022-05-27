@@ -3,15 +3,13 @@ import SortView from '../view/sort-view.js';
 import NoEventsView from '../view/no-events-view.js';
 import { RenderPosition, render } from '../framework/render.js';
 import EventPresenter from './event-presenter.js';
-import { updateItemList } from '../utils/common.js';
-import { sorting, SortType } from '../utils/sort.js';
+import { timeCompare, priceCompare } from '../utils/sort.js';
+import { SortType } from '../utils/settings.js';
 
 
 export default class AppPresenter {
   #eventsContainer = null;
   #eventsModel = null;
-  #events = [];
-  #defaultSortedEvents = [];
   #eventsListComponent = new EventsListView();
   #eventsDict = new Map();
   #sortComponent = new SortView();
@@ -22,9 +20,17 @@ export default class AppPresenter {
     this.#eventsModel = eventsModel;
   }
 
+  get events() {
+    switch (this.#currentSortType) {
+      case SortType.TIME:
+        return [...this.#eventsModel.events].sort(timeCompare);
+      case SortType.PRICE:
+        return [...this.#eventsModel.events].sort(priceCompare);
+    }
+    return this.#eventsModel.events;
+  }
+
   init = () => {
-    this.#events = [...this.#eventsModel.events];
-    this.#defaultSortedEvents = [...this.#events];
     this.#renderEventsList();
   };
 
@@ -48,14 +54,14 @@ export default class AppPresenter {
   };
 
   #renderEventsList = () => {
-    if (!this.#events.length) {
+    if (!this.events.length) {
       this.#renderNoEvents();
     } else {
       this.#renderSort();
       render(this.#eventsListComponent, this.#eventsContainer);
 
-      for (let i = 0; i < this.#events.length; i++) {
-        this.#renderEvent(this.#events[i]);
+      for (let i = 0; i < this.events.length; i++) {
+        this.#renderEvent(this.events[i]);
       }
     }
   };
@@ -66,8 +72,7 @@ export default class AppPresenter {
   };
 
   #handleEventUpdate = (updatedEvent) => {
-    this.#events = updateItemList(this.#events, updatedEvent);
-    this.#defaultSortedEvents = updateItemList(this.#events, updatedEvent);
+
     this.#eventsDict.get(updatedEvent.id).init(updatedEvent);
   };
 
@@ -79,17 +84,9 @@ export default class AppPresenter {
     if (this.#currentSortType === sortType) {
       return;
     }
-    this.#sortEvents(sortType);
+    this.#currentSortType = sortType;
     this.#clearEventsList();
     this.#renderEventsList();
   };
 
-  #sortEvents = (sortType) => {
-    if (sortType === SortType.DEFAULT) {
-      this.#events = [...this.#defaultSortedEvents];
-    } else {
-      this.#events = sorting[sortType](this.#events);
-    }
-    this.#currentSortType = sortType;
-  };
 }

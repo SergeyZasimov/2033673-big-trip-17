@@ -2,12 +2,10 @@ import { offersAll } from '../mock/offer.js';
 import { destinations } from '../mock/destination.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getEditTime } from '../utils/date-time.js';
-import { getSettings } from '../utils/settings.js';
+import { DEFAULT_EVENT, EVENT_TYPES } from '../utils/settings.js';
 import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
-
-const { DEFAULT_EVENT, EVENT_TYPES } = getSettings();
 
 const createEventEditTemplate = (state) => {
 
