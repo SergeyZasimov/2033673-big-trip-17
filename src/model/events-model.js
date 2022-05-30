@@ -35,7 +35,7 @@ export default class EventsModel extends Observable {
     this._notify(updateType, update);
   };
 
-  deleteTask = (updateType, update) => {
+  deleteEvent = (updateType, update) => {
     const index = this.#events.findIndex((event) => event.id === update.id);
     if (index === -1) {
       throw new Error('Can\'t delete unexisting event');
@@ -46,6 +46,6 @@ export default class EventsModel extends Observable {
       ...this.events.slice(index + 1)
     ];
 
-    this._notify(updateType);
+    this._notify(updateType, update);
   };
 }

@@ -12,9 +12,10 @@ export default class AppPresenter {
   #eventsContainer = null;
   #eventsModel = null;
   #filterModel = null;
-  #eventsListComponent = new EventsListView();
-  #eventsDict = new Map();
   #sortComponent = null;
+  #noEventsComponent = null;
+  #eventsDict = new Map();
+  #eventsListComponent = new EventsListView();
   #currentSortType = SortType.DEFAULT;
 
   constructor(eventsContainer, eventsModel, filterModel) {
@@ -51,7 +52,8 @@ export default class AppPresenter {
   };
 
   #renderNoEvents = () => {
-    render(new NoEventsView(), this.#eventsContainer, RenderPosition.AFTERBEGIN);
+    this.#noEventsComponent = new NoEventsView(this.#filterModel.filterType)
+    render(this.#noEventsComponent, this.#eventsContainer, RenderPosition.AFTERBEGIN);
   };
 
   #renderEvent = (event) => {
