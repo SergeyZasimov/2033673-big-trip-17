@@ -18,7 +18,7 @@ const eventsModel = new EventsModel();
 const filterModel = new FiltersModel();
 
 const appPresenter = new AppPresenter(mainTripEvents, eventsModel, filterModel);
-const filterPresenter = new FilterPresenter(headerControlsFilters, eventsModel);
+const filterPresenter = new FilterPresenter(headerControlsFilters, eventsModel, filterModel);
 
 filterPresenter.init();
 appPresenter.init();

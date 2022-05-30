@@ -1,10 +1,11 @@
 import EventsListView from '../view/events-list-view.js';
 import SortView from '../view/sort-view.js';
 import NoEventsView from '../view/no-events-view.js';
-import { RenderPosition, render } from '../framework/render.js';
+import { RenderPosition, render, remove } from '../framework/render.js';
 import EventPresenter from './event-presenter.js';
-import { timeCompare, priceCompare } from '../utils/sort.js';
-import { SortType } from '../utils/settings.js';
+import { timeCompare, priceCompare, dayCompare } from '../utils/sort.js';
+import { SortType, UpdateType, UserAction } from '../utils/settings.js';
+import { filters } from '../utils/filter.js';
 
 
 export default class AppPresenter {
@@ -13,23 +14,30 @@ export default class AppPresenter {
   #filterModel = null;
   #eventsListComponent = new EventsListView();
   #eventsDict = new Map();
-  #sortComponent = new SortView();
+  #sortComponent = null;
   #currentSortType = SortType.DEFAULT;
 
   constructor(eventsContainer, eventsModel, filterModel) {
     this.#eventsContainer = eventsContainer;
     this.#eventsModel = eventsModel;
     this.#filterModel = filterModel;
+
+    this.#eventsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get events() {
+    const filterType = this.#filterModel.filterType;
+    const events = this.#eventsModel.events;
+    const filteredEvents = filters[filterType](events);
+
     switch (this.#currentSortType) {
       case SortType.TIME:
-        return [...this.#eventsModel.events].sort(timeCompare);
+        return filteredEvents.sort(timeCompare);
       case SortType.PRICE:
-        return [...this.#eventsModel.events].sort(priceCompare);
+        return filteredEvents.sort(priceCompare);
     }
-    return this.#eventsModel.events;
+    return filteredEvents.sort(dayCompare);
   }
 
   init = () => {
@@ -37,6 +45,7 @@ export default class AppPresenter {
   };
 
   #renderSort = () => {
+    this.#sortComponent = new SortView(this.#currentSortType);
     render(this.#sortComponent, this.#eventsContainer, RenderPosition.AFTERBEGIN);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   };
@@ -48,7 +57,7 @@ export default class AppPresenter {
   #renderEvent = (event) => {
     const eventPresenter = new EventPresenter(
       this.#eventsListComponent.element,
-      this.#handleEventUpdate,
+      this.#handleViewAction,
       this.#handleModeChange
     );
     eventPresenter.init(event);
@@ -68,14 +77,15 @@ export default class AppPresenter {
     }
   };
 
-  #clearEventsList = () => {
+  #clearEventsList = ({ resetSort = false } = {}) => {
     this.#eventsDict.forEach((presenter) => presenter.destroy());
     this.#eventsDict.clear();
-  };
 
-  #handleEventUpdate = (updatedEvent) => {
+    remove(this.#sortComponent);
 
-    this.#eventsDict.get(updatedEvent.id).init(updatedEvent);
+    if (resetSort) {
+      this.#currentSortType = SortType.DEFAULT;
+    }
   };
 
   #handleModeChange = () => {
@@ -91,8 +101,34 @@ export default class AppPresenter {
     this.#renderEventsList();
   };
 
-  #handleFilterTypeChange = (filterType) => {
-    this.#filterModel.filterType = filterType;
+  #handleModelEvent = (updateType, data) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#eventsDict.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        this.#clearEventsList();
+        this.#renderEventsList();
+        break;
+      case UpdateType.MAJOR:
+        this.#clearEventsList({ resetSort: true });
+        this.#renderEventsList();
+        break;
+    }
+  };
+
+  #handleViewAction = (actionType, updateType, update) => {
+    switch (actionType) {
+      case UserAction.UPDATE_EVENT:
+        this.#eventsModel.updateEvent(updateType, update);
+        break;
+      case UserAction.ADD_EVENT:
+        this.#eventsModel.addEvent(updateType, update);
+        break;
+      case UserAction.DELETE_EVENT:
+        this.#eventsModel.deleteEvent(updateType, update);
+        break;
+    }
   };
 
 }
