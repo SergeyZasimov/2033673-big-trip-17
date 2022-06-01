@@ -1,7 +1,7 @@
 import { remove, render, replace } from '../framework/render.js';
 import EventView from '../view/event-view.js';
 import EventEditView from '../view/event-edit-view.js';
-import {Mode} from '../utils/settings.js';
+import { Mode, UpdateType, UserAction } from '../utils/settings.js';
 
 export default class EventPresenter {
   #eventComponent = null;
@@ -11,12 +11,12 @@ export default class EventPresenter {
   #event = null;
   #mode = Mode.DEFAULT;
 
-  #updateEvent = null;
+  #changeData = null;
   #changeMode = null;
 
-  constructor(eventsListContainer, updateEvent, changeMode) {
+  constructor(eventsListContainer, changeData, changeMode) {
     this.#eventsListContainer = eventsListContainer;
-    this.#updateEvent = updateEvent;
+    this.#changeData = changeData;
     this.#changeMode = changeMode;
   }
 
@@ -57,6 +57,7 @@ export default class EventPresenter {
 
     this.#eventEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#eventEditComponent.setCloseFormHandler(this.#handleCloseForm);
+    this.#eventEditComponent.setDeleteHandler(this.#handleDeleteClick);
 
     document.addEventListener('keydown', this.#onEscKeyDown);
 
@@ -96,6 +97,17 @@ export default class EventPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#updateEvent({ ...this.#event, isFavorite: !this.#event.isFavorite });
+    this.#changeData(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MINOR,
+      { ...this.#event, isFavorite: !this.#event.isFavorite });
+  };
+
+  #handleDeleteClick = (event) => {
+    this.#changeData(
+      UserAction.DELETE_EVENT,
+      UpdateType.MINOR,
+      event
+    );
   };
 }

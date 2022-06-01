@@ -52,7 +52,7 @@ export default class AppPresenter {
   };
 
   #renderNoEvents = () => {
-    this.#noEventsComponent = new NoEventsView(this.#filterModel.filterType)
+    this.#noEventsComponent = new NoEventsView(this.#filterModel.filterType);
     render(this.#noEventsComponent, this.#eventsContainer, RenderPosition.AFTERBEGIN);
   };
 

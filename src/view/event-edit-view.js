@@ -148,6 +148,7 @@ export default class EventEditView extends AbstractStatefulView {
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setCloseFormHandler(this._callback.closeForm);
+    this.setDeleteHandler(this._callback.deleteEvent);
     this.#setDatePicker();
   };
 
@@ -159,6 +160,11 @@ export default class EventEditView extends AbstractStatefulView {
   setCloseFormHandler = (callback) => {
     this._callback.closeForm = callback;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeFormHandler);
+  };
+
+  setDeleteHandler = (callback) => {
+    this._callback.deleteEvent = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
   };
 
   #setInnerHandlers = () => {
@@ -220,5 +226,10 @@ export default class EventEditView extends AbstractStatefulView {
         onChange: this.#changeTimeHandler,
       }
     );
+  };
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteEvent(EventEditView.convertStateToTask(this._state));
   };
 }
