@@ -3,8 +3,8 @@ import { FilterType } from '../utils/settings.js';
 
 const NoEventTextValue = {
   [FilterType.EVERYTHING]: 'Click New Event to create your first point',
-  [FilterType.FUTURE]: 'There are no past events now',
-  [FilterType.PAST]: 'There are no future events now',
+  [FilterType.PAST]: 'There are no past events now',
+  [FilterType.FUTURE]: 'There are no future events now',
 };
 
 const createNoEventsTemplate = (filterType) => {
