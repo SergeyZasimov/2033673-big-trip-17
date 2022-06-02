@@ -32,6 +32,8 @@ export default class EventsModel extends Observable {
       update
     ];
 
+    console.log(this.#events);
+
     this._notify(updateType, update);
   };
 

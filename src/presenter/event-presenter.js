@@ -7,6 +7,7 @@ export default class EventPresenter {
   #eventComponent = null;
   #eventEditComponent = null;
   #eventsListContainer = null;
+  #removeNewEventForm = null;
 
   #event = null;
   #mode = Mode.DEFAULT;
@@ -14,10 +15,11 @@ export default class EventPresenter {
   #changeData = null;
   #changeMode = null;
 
-  constructor(eventsListContainer, changeData, changeMode) {
+  constructor(eventsListContainer, changeData, changeMode, removeNewEventForm) {
     this.#eventsListContainer = eventsListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
+    this.#removeNewEventForm = removeNewEventForm;
   }
 
   init = (event) => {
@@ -57,7 +59,7 @@ export default class EventPresenter {
 
     this.#eventEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#eventEditComponent.setCloseFormHandler(this.#handleCloseForm);
-    this.#eventEditComponent.setDeleteHandler(this.#handleDeleteClick);
+    this.#eventEditComponent.setResetHandler(this.#handleDeleteClick);
 
     document.addEventListener('keydown', this.#onEscKeyDown);
 
@@ -73,6 +75,7 @@ export default class EventPresenter {
   };
 
   #handleEditClick = () => {
+    this.#removeNewEventForm();
     this.#replaceEventToEdit();
   };
 

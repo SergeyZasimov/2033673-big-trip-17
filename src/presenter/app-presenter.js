@@ -6,23 +6,30 @@ import EventPresenter from './event-presenter.js';
 import { timeCompare, priceCompare, dayCompare } from '../utils/sort.js';
 import { SortType, UpdateType, UserAction } from '../utils/settings.js';
 import { filters } from '../utils/filter.js';
+import NewEventButtonView from '../view/new-event-button-view';
+import NewEventPresenter from './new-event-presenter';
 
 
 export default class AppPresenter {
-  #eventsContainer = null;
+  #mainBoard = null;
+  #infoContainer = null;
   #eventsModel = null;
   #filterModel = null;
+  #newButtonComponent = null;
   #sortComponent = null;
   #noEventsComponent = null;
+  #eventsListComponent = null;
   #eventsDict = new Map();
-  #eventsListComponent = new EventsListView();
   #currentSortType = SortType.DEFAULT;
+  #newEventPresenter = null;
 
-  constructor(eventsContainer, eventsModel, filterModel) {
-    this.#eventsContainer = eventsContainer;
+  constructor(eventsContainer, infoContainer, eventsModel, filterModel) {
+    this.#mainBoard = eventsContainer;
+    this.#infoContainer = infoContainer;
     this.#eventsModel = eventsModel;
     this.#filterModel = filterModel;
 
+    this.#eventsListComponent = new EventsListView();
     this.#eventsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
@@ -42,25 +49,39 @@ export default class AppPresenter {
   }
 
   init = () => {
+    this.#renderNewButton();
     this.#renderEventsList();
   };
 
   #renderSort = () => {
     this.#sortComponent = new SortView(this.#currentSortType);
-    render(this.#sortComponent, this.#eventsContainer, RenderPosition.AFTERBEGIN);
+    render(this.#sortComponent, this.#mainBoard, RenderPosition.AFTERBEGIN);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   };
 
   #renderNoEvents = () => {
     this.#noEventsComponent = new NoEventsView(this.#filterModel.filterType);
-    render(this.#noEventsComponent, this.#eventsContainer, RenderPosition.AFTERBEGIN);
+    render(this.#noEventsComponent, this.#mainBoard, RenderPosition.AFTERBEGIN);
+  };
+
+  #renderNewButton = () => {
+    this.#newButtonComponent = new NewEventButtonView();
+    render(this.#newButtonComponent, this.#infoContainer);
+    this.#newEventPresenter = new NewEventPresenter(
+      this.#eventsListComponent.element,
+      this.#newButtonComponent,
+      this.#handleViewAction,
+      this.#handleModeChange
+    );
+    this.#newEventPresenter.init();
   };
 
   #renderEvent = (event) => {
     const eventPresenter = new EventPresenter(
       this.#eventsListComponent.element,
       this.#handleViewAction,
-      this.#handleModeChange
+      this.#handleModeChange,
+      this.#newEventPresenter.destroy
     );
     eventPresenter.init(event);
     this.#eventsDict.set(event.id, eventPresenter);
@@ -71,7 +92,7 @@ export default class AppPresenter {
       this.#renderNoEvents();
     } else {
       this.#renderSort();
-      render(this.#eventsListComponent, this.#eventsContainer);
+      render(this.#eventsListComponent, this.#mainBoard);
 
       for (let i = 0; i < this.events.length; i++) {
         this.#renderEvent(this.events[i]);

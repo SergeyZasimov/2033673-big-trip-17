@@ -9,7 +9,7 @@ import 'flatpickr/dist/flatpickr.min.css';
 
 const createEventEditTemplate = (state) => {
 
-  const { type, destination, basePrice, dateFrom, dateTo, id, offers } = state;
+  const { type, destination, basePrice, dateFrom, dateTo, id, offers, isNewEvent } = state;
 
   const eventTypeOffers = (offersAll
     .find((item) => item.type === type)).offers;
@@ -51,7 +51,7 @@ const createEventEditTemplate = (state) => {
             <label class="event__label  event__type-output" for="event-destination-${ id }">
               ${ type }
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-${ id }" type="text" name="event-destination" value="${ eventDestination.name }" list="destination-list-${ id }" autocomplete="off">
+            <input class="event__input  event__input--destination" id="event-destination-${ id }" type="text" name="event-destination" value="${ eventDestination ? eventDestination.name : '' }" list="destination-list-${ id }" autocomplete="off">
             <datalist id="destination-list-${ id }">
               <option value="Amsterdam"></option>
               <option value="Geneva"></option>
@@ -76,7 +76,7 @@ const createEventEditTemplate = (state) => {
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
+          <button class="event__reset-btn" type="reset">${ isNewEvent ? 'Cancel' : 'Delete' }</button>
           <button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
           </button>
@@ -93,6 +93,7 @@ const createEventEditTemplate = (state) => {
                   id="event-offer-luggage-${ item.id }"
                   type="checkbox"
                   name="event-offer-luggage"
+                  data-offer_id = ${ item.id }
                   ${ offers.includes(item.id) ? 'checked' : '' }>
                 <label class="event__offer-label" for="event-offer-luggage-${ item.id }">
                   <span class="event__offer-title">${ item.title }</span>
@@ -103,23 +104,21 @@ const createEventEditTemplate = (state) => {
             `).join('') }
             </div>
           </section>
+${ destination ? `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${ eventDestination.description }</p>
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
 
-          <section class="event__section  event__section--destination">
-            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${ eventDestination.description }</p>
-            <div class="event__photos-container">
-              <div class="event__photos-tape">
-
-    ${ eventDestination.pictures.length !== 0
+          ${ eventDestination.pictures.length !== 0
       ? eventDestination.pictures.map((image) => (
         `<img class="event__photo" src="${ image.src }" alt="${ image.description }">`
       )).join('')
       : ''
     }
-
-              </div>
-            </div>
-          </section>
+        </div>
+      </div>
+    </section> ` : '' }
         </section>
   </form>
     </li>`
@@ -140,15 +139,22 @@ export default class EventEditView extends AbstractStatefulView {
     return createEventEditTemplate(this._state);
   }
 
-  static convertEventToState = (event) => ({ ...event });
+  static convertEventToState = (event) => {
+    const isNewEvent = !(event.destination && event.basePrice);
+    return { ...event, isNewEvent };
+  };
 
-  static convertStateToTask = (state) => ({ ...state });
+  static convertStateToTask = (state) => {
+    const event = { ...state };
+    delete event.isNewEvent;
+    return event;
+  };
 
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setCloseFormHandler(this._callback.closeForm);
-    this.setDeleteHandler(this._callback.deleteEvent);
+    this.setResetHandler(this._callback.deleteEvent);
     this.#setDatePicker();
   };
 
@@ -162,7 +168,7 @@ export default class EventEditView extends AbstractStatefulView {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeFormHandler);
   };
 
-  setDeleteHandler = (callback) => {
+  setResetHandler = (callback) => {
     this._callback.deleteEvent = callback;
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
   };
@@ -171,12 +177,14 @@ export default class EventEditView extends AbstractStatefulView {
     this.element.querySelector('.event__type-list').addEventListener('change', this.#changeTypeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('focus', this.#focusDestinationHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeDestinationHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#inputPriceHandler);
+    this.element.querySelector('.event__available-offers').addEventListener('change', this.#changeOfferHandler);
 
   };
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(EventEditView.convertStateToTask(this._state));
   };
 
   #closeFormHandler = () => {
@@ -205,6 +213,26 @@ export default class EventEditView extends AbstractStatefulView {
     this.updateElement({
       destination: evt.target.value
     });
+  };
+
+  #inputPriceHandler = (evt) => {
+    evt.preventDefault();
+    this._state = { ...this._state, basePrice: evt.target.value };
+  };
+
+  #changeOfferHandler = (evt) => {
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+    evt.preventDefault();
+    const id = +evt.target.dataset.offer_id;
+
+    if (this._state.offers.includes(id)) {
+      const index = this._state.offers.findIndex((item) => item === id);
+      this._state.offers.splice(index, 1);
+    } else {
+      this._state.offers.push(id);
+    }
   };
 
   #changeTimeHandler = ([dateFrom, dateTo]) => {
