@@ -100,15 +100,11 @@ export default class AppPresenter {
     }
   };
 
-  #clearEventsList = ({ resetSort = false } = {}) => {
+  #clearEventsList = () => {
     this.#eventsDict.forEach((presenter) => presenter.destroy());
     this.#eventsDict.clear();
 
     remove(this.#sortComponent);
-
-    if (resetSort) {
-      this.#currentSortType = SortType.DEFAULT;
-    }
   };
 
   #handleModeChange = () => {
@@ -134,7 +130,7 @@ export default class AppPresenter {
         this.#renderEventsList();
         break;
       case UpdateType.MAJOR:
-        this.#clearEventsList({ resetSort: true });
+        this.#clearEventsList();
         this.#renderEventsList();
         break;
     }

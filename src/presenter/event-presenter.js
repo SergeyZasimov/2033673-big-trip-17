@@ -79,10 +79,15 @@ export default class EventPresenter {
     this.#replaceEventToEdit();
   };
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (event) => {
     this.#replaceEditToEvent();
     this.#mode = Mode.DEFAULT;
     document.removeEventListener('keydown', this.#onEscKeyDown);
+    this.#changeData(
+      UserAction.UPDATE_EVENT,
+      UpdateType.PATCH,
+      event
+    );
   };
 
   #handleCloseForm = () => {
@@ -102,7 +107,7 @@ export default class EventPresenter {
   #handleFavoriteClick = () => {
     this.#changeData(
       UserAction.UPDATE_EVENT,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       { ...this.#event, isFavorite: !this.#event.isFavorite });
   };
 

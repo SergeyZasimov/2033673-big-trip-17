@@ -33,6 +33,6 @@ export default class FilterPresenter {
     if (this.#filtersModel.filterType === filterType) {
       return;
     }
-    this.#filtersModel.setFilterType(UpdateType.MAJOR, filterType);
+    this.#filtersModel.setFilterType(UpdateType.MINOR, filterType);
   };
 }
