@@ -154,6 +154,7 @@ export default class AppPresenter {
         this.#renderEventsList();
         break;
       case UpdateType.MAJOR:
+        this.#rerenderFilters();
         this.#clearEventsList();
         this.#rerenderSort();
         this.#renderEventsList();

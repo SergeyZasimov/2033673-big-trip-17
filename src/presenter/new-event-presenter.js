@@ -57,7 +57,7 @@ export default class NewEventPresenter {
   #handleSubmitClick = (event) => {
     this.#changeData(
       UserAction.ADD_EVENT,
-      UpdateType.MINOR,
+      UpdateType.MAJOR,
       { id: nanoid(), ...event }
     );
     this.destroy();
