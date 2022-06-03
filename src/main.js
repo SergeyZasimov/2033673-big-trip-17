@@ -1,22 +1,20 @@
 import { render, RenderPosition } from './render.js';
 import InfoView from './view/info-view.js';
-import FiltersView from './view/filters-view.js';
 import AppPresenter from './presenter/app-presenter.js';
 import EventsModel from './model/events-model.js';
-import { generateFilters } from './utils/filter';
+import FiltersModel from './model/filters-model';
 
-const headerContainer = document.querySelector('.page-header');
-const headerTripMain = headerContainer.querySelector('.trip-main');
-const headerControlsFilters = headerContainer.querySelector('.trip-controls__filters');
+const headerInfo = document.querySelector('.trip-main');
+const headerControlsFilters = document.querySelector('.trip-controls__filters');
 
-const mainContainer = document.querySelector('.page-main');
-const mainTripEvents = mainContainer.querySelector('.trip-events');
+const mainEventsBoard = document.querySelector('.page-main').querySelector('.trip-events');
+
+
+render(new InfoView(), headerInfo, RenderPosition.AFTERBEGIN);
 
 const eventsModel = new EventsModel();
-const filters = generateFilters(eventsModel.events);
+const filterModel = new FiltersModel();
 
-render(new InfoView(), headerTripMain, RenderPosition.AFTERBEGIN);
-render(new FiltersView(filters), headerControlsFilters);
+const appPresenter = new AppPresenter(mainEventsBoard, headerInfo, headerControlsFilters, eventsModel, filterModel);
 
-const eventsPresenter = new AppPresenter(mainTripEvents, eventsModel);
-eventsPresenter.init();
+appPresenter.init();

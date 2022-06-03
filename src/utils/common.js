@@ -20,21 +20,7 @@ const getRandomUniqList = (length) => {
   };
 };
 
-const updateItemList = (itemList, updatedItem) => {
-  const index = itemList.findIndex((item) => item.id === updatedItem.id);
-  if (index === -1) {
-    return itemList;
-  }
-
-  return [
-    ...itemList.slice(0, index),
-    updatedItem,
-    ...itemList.slice(index + 1)
-  ];
-};
-
 export {
   getRandomInteger,
   getRandomUniqList,
-  updateItemList,
 };

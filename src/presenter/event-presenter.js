@@ -1,28 +1,25 @@
 import { remove, render, replace } from '../framework/render.js';
 import EventView from '../view/event-view.js';
 import EventEditView from '../view/event-edit-view.js';
-
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
+import { Mode, UpdateType, UserAction } from '../utils/settings.js';
 
 export default class EventPresenter {
   #eventComponent = null;
   #eventEditComponent = null;
   #eventsListContainer = null;
+  #removeNewEventForm = null;
 
   #event = null;
   #mode = Mode.DEFAULT;
 
-  #updateEvent = null;
+  #changeData = null;
   #changeMode = null;
 
-  constructor(eventsListContainer, updateEvent, changeMode) {
+  constructor(eventsListContainer, changeData, changeMode, removeNewEventForm) {
     this.#eventsListContainer = eventsListContainer;
-    this.#updateEvent = updateEvent;
+    this.#changeData = changeData;
     this.#changeMode = changeMode;
+    this.#removeNewEventForm = removeNewEventForm;
   }
 
   init = (event) => {
@@ -62,6 +59,7 @@ export default class EventPresenter {
 
     this.#eventEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#eventEditComponent.setCloseFormHandler(this.#handleCloseForm);
+    this.#eventEditComponent.setResetHandler(this.#handleDeleteClick);
 
     document.addEventListener('keydown', this.#onEscKeyDown);
 
@@ -77,13 +75,19 @@ export default class EventPresenter {
   };
 
   #handleEditClick = () => {
+    this.#removeNewEventForm();
     this.#replaceEventToEdit();
   };
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (event) => {
     this.#replaceEditToEvent();
     this.#mode = Mode.DEFAULT;
     document.removeEventListener('keydown', this.#onEscKeyDown);
+    this.#changeData(
+      UserAction.UPDATE_EVENT,
+      UpdateType.PATCH,
+      event
+    );
   };
 
   #handleCloseForm = () => {
@@ -101,6 +105,17 @@ export default class EventPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#updateEvent({ ...this.#event, isFavorite: !this.#event.isFavorite });
+    this.#changeData(
+      UserAction.UPDATE_EVENT,
+      UpdateType.PATCH,
+      { ...this.#event, isFavorite: !this.#event.isFavorite });
+  };
+
+  #handleDeleteClick = (event) => {
+    this.#changeData(
+      UserAction.DELETE_EVENT,
+      UpdateType.MINOR,
+      event
+    );
   };
 }
