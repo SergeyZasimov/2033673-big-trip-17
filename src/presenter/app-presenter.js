@@ -65,13 +65,13 @@ export default class AppPresenter {
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   };
 
-  #rerenderSort = () => {
+  #resetSort = () => {
     remove(this.#sortComponent);
     this.#currentSortType = SortType.DEFAULT;
     this.#createSort();
   };
 
-  #rerenderFilters = () => {
+  #resetFilters = () => {
     this.#filterModel.setFilterType(UpdateType.MINOR, FilterType.EVERYTHING);
     this.#filtersPresenter.removeFilters();
     this.#filtersPresenter.init();
@@ -91,8 +91,8 @@ export default class AppPresenter {
       this.#filterModel,
       this.#handleViewAction,
       this.#handleModeChange,
-      this.#rerenderSort,
-      this.#rerenderFilters
+      this.#resetSort,
+      this.#resetFilters
     );
     this.#newEventPresenter.init();
   };
@@ -118,10 +118,7 @@ export default class AppPresenter {
       this.#createNoEvents();
     } else {
       render(this.#eventsListComponent, this.#mainBoard);
-
-      for (let i = 0; i < this.events.length; i++) {
-        this.#createEvent(this.events[i]);
-      }
+      this.events.forEach((event) => this.#createEvent(event));
     }
   };
 
@@ -150,13 +147,13 @@ export default class AppPresenter {
         break;
       case UpdateType.MINOR:
         this.#clearEventsList();
-        this.#rerenderSort();
+        this.#resetSort();
         this.#renderEventsList();
         break;
       case UpdateType.MAJOR:
-        this.#rerenderFilters();
+        this.#resetFilters();
         this.#clearEventsList();
-        this.#rerenderSort();
+        this.#resetSort();
         this.#renderEventsList();
         break;
     }
