@@ -1,6 +1,6 @@
 import { filters } from '../utils/filter.js';
 import FiltersView from '../view/filters-view.js';
-import { render } from '../framework/render.js';
+import { remove, render } from '../framework/render.js';
 import { UpdateType } from '../utils/settings.js';
 
 export default class FilterPresenter {
@@ -27,6 +27,10 @@ export default class FilterPresenter {
     this.#filtersComponent = new FiltersView(this.filters, this.#filtersModel.filterType);
     this.#filtersComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
     render(this.#filtersComponent, this.#filtersContainer);
+  };
+
+  removeFilters = () => {
+    remove(this.#filtersComponent);
   };
 
   #handleFilterTypeChange = (filterType) => {

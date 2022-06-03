@@ -1,6 +1,6 @@
 import NewEventButtonView from '../view/new-event-button-view';
 import { remove, render, RenderPosition } from '../framework/render';
-import { UpdateType, UserAction } from '../utils/settings';
+import { FilterType, UpdateType, UserAction } from '../utils/settings';
 import { nanoid } from 'nanoid';
 import EventEditView from '../view/event-edit-view';
 
@@ -10,12 +10,18 @@ export default class NewEventPresenter {
   #eventEditComponent = null;
   #changeData = null;
   #changeMode = null;
+  #rerenderSort = null;
+  #rerenderFilters = null;
+  #filterModel = null;
 
-  constructor(eventListComponent, newEventButtonComponent, changeData, changeMode) {
+  constructor(eventListComponent, newEventButtonComponent, filterModel, changeData, changeMode, rerenderSort, rerenderFilters) {
     this.#eventListComponent = eventListComponent;
     this.#newEventButtonComponent = newEventButtonComponent;
+    this.#filterModel = filterModel;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
+    this.#rerenderSort = rerenderSort;
+    this.#rerenderFilters = rerenderFilters;
   }
 
   init = () => {
@@ -42,6 +48,8 @@ export default class NewEventPresenter {
 
     this.#newEventButtonComponent.element.setAttribute('disabled', true);
     this.#changeMode();
+    this.#rerenderSort();
+    this.#rerenderFilters();
     render(this.#eventEditComponent, this.#eventListComponent, RenderPosition.AFTERBEGIN);
 
   };

@@ -4,15 +4,17 @@ import NoEventsView from '../view/no-events-view.js';
 import { RenderPosition, render, remove } from '../framework/render.js';
 import EventPresenter from './event-presenter.js';
 import { timeCompare, priceCompare, dayCompare } from '../utils/sort.js';
-import { SortType, UpdateType, UserAction } from '../utils/settings.js';
+import { FilterType, SortType, UpdateType, UserAction } from '../utils/settings.js';
 import { filters } from '../utils/filter.js';
 import NewEventButtonView from '../view/new-event-button-view';
 import NewEventPresenter from './new-event-presenter';
+import FilterPresenter from './filter-presenter';
 
 
 export default class AppPresenter {
   #mainBoard = null;
   #infoContainer = null;
+  #filtersContainer = null;
   #eventsModel = null;
   #filterModel = null;
   #newButtonComponent = null;
@@ -22,10 +24,12 @@ export default class AppPresenter {
   #eventsDict = new Map();
   #currentSortType = SortType.DEFAULT;
   #newEventPresenter = null;
+  #filtersPresenter = null;
 
-  constructor(eventsContainer, infoContainer, eventsModel, filterModel) {
+  constructor(eventsContainer, infoContainer, filtersContainer, eventsModel, filterModel) {
     this.#mainBoard = eventsContainer;
     this.#infoContainer = infoContainer;
+    this.#filtersContainer = filtersContainer;
     this.#eventsModel = eventsModel;
     this.#filterModel = filterModel;
 
@@ -49,34 +53,56 @@ export default class AppPresenter {
   }
 
   init = () => {
-    this.#renderNewButton();
+    this.#createFilters();
+    this.#createNewButton();
+    this.#createSort();
     this.#renderEventsList();
   };
 
-  #renderSort = () => {
+  #createSort = () => {
     this.#sortComponent = new SortView(this.#currentSortType);
     render(this.#sortComponent, this.#mainBoard, RenderPosition.AFTERBEGIN);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   };
 
-  #renderNoEvents = () => {
+  #rerenderSort = () => {
+    remove(this.#sortComponent);
+    this.#currentSortType = SortType.DEFAULT;
+    this.#createSort();
+  };
+
+  #rerenderFilters = () => {
+    this.#filterModel.setFilterType(UpdateType.MINOR, FilterType.EVERYTHING);
+    this.#filtersPresenter.removeFilters();
+    this.#filtersPresenter.init();
+  };
+
+  #createNoEvents = () => {
     this.#noEventsComponent = new NoEventsView(this.#filterModel.filterType);
     render(this.#noEventsComponent, this.#mainBoard, RenderPosition.AFTERBEGIN);
   };
 
-  #renderNewButton = () => {
+  #createNewButton = () => {
     this.#newButtonComponent = new NewEventButtonView();
     render(this.#newButtonComponent, this.#infoContainer);
     this.#newEventPresenter = new NewEventPresenter(
       this.#eventsListComponent.element,
       this.#newButtonComponent,
+      this.#filterModel,
       this.#handleViewAction,
-      this.#handleModeChange
+      this.#handleModeChange,
+      this.#rerenderSort,
+      this.#rerenderFilters
     );
     this.#newEventPresenter.init();
   };
 
-  #renderEvent = (event) => {
+  #createFilters = () => {
+    this.#filtersPresenter = new FilterPresenter(this.#filtersContainer, this.#eventsModel, this.#filterModel);
+    this.#filtersPresenter.init();
+  };
+
+  #createEvent = (event) => {
     const eventPresenter = new EventPresenter(
       this.#eventsListComponent.element,
       this.#handleViewAction,
@@ -89,13 +115,12 @@ export default class AppPresenter {
 
   #renderEventsList = () => {
     if (!this.events.length) {
-      this.#renderNoEvents();
+      this.#createNoEvents();
     } else {
-      this.#renderSort();
       render(this.#eventsListComponent, this.#mainBoard);
 
       for (let i = 0; i < this.events.length; i++) {
-        this.#renderEvent(this.events[i]);
+        this.#createEvent(this.events[i]);
       }
     }
   };
@@ -103,8 +128,6 @@ export default class AppPresenter {
   #clearEventsList = () => {
     this.#eventsDict.forEach((presenter) => presenter.destroy());
     this.#eventsDict.clear();
-
-    remove(this.#sortComponent);
   };
 
   #handleModeChange = () => {
@@ -127,10 +150,12 @@ export default class AppPresenter {
         break;
       case UpdateType.MINOR:
         this.#clearEventsList();
+        this.#rerenderSort();
         this.#renderEventsList();
         break;
       case UpdateType.MAJOR:
         this.#clearEventsList();
+        this.#rerenderSort();
         this.#renderEventsList();
         break;
     }
