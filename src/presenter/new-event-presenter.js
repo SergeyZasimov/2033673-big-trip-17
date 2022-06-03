@@ -1,6 +1,5 @@
-import NewEventButtonView from '../view/new-event-button-view';
 import { remove, render, RenderPosition } from '../framework/render';
-import { FilterType, UpdateType, UserAction } from '../utils/settings';
+import { UpdateType, UserAction } from '../utils/settings';
 import { nanoid } from 'nanoid';
 import EventEditView from '../view/event-edit-view';
 
