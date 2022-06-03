@@ -5,7 +5,17 @@ import Observable from '../framework/observable.js';
 const { TEST_EVENTS_NUMBER } = getTestSettings();
 
 export default class EventsModel extends Observable {
+  #eventsApiService = null;
   #events = Array.from({ length: TEST_EVENTS_NUMBER }, generateEvent);
+
+  constructor(eventsApiService) {
+    super();
+    this.#eventsApiService = eventsApiService;
+
+    this.#eventsApiService.events
+      .then((events) => console.log(events))
+  }
+
 
   get events() {
     return this.#events;
