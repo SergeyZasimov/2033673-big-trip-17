@@ -68,11 +68,11 @@ const createEventEditTemplate = (state) => {
           </div>
 
           <div class="event__field-group  event__field-group--price">
-            <label class="event__label" for="event-price-1">
+            <label class="event__label" for="event-price-${ id }">
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-${ id }" type="text" name="event-price" value="${ basePrice }">
+            <input class="event__input  event__input--price" id="event-price-${ id }" type="number" name="event-price" value="${ basePrice }">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
