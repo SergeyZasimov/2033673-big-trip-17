@@ -1,20 +1,30 @@
 import { generateEvent } from '../mock/event.js';
 import { getTestSettings } from '../mock/testSettings';
 import Observable from '../framework/observable.js';
-
-const { TEST_EVENTS_NUMBER } = getTestSettings();
+import { UpdateType } from '../utils/settings';
 
 export default class EventsModel extends Observable {
   #eventsApiService = null;
-  #events = Array.from({ length: TEST_EVENTS_NUMBER }, generateEvent);
+  #events = [];
 
   constructor(eventsApiService) {
     super();
     this.#eventsApiService = eventsApiService;
 
     this.#eventsApiService.events
-      .then((events) =>console.log(events.map(this.#adaptToClient)));
+      .then((events) => console.log(events.map(this.#adaptToClient)));
   }
+
+  init = async () => {
+    try {
+      const events = await this.#eventsApiService.events;
+      this.#events = events.map(this.#adaptToClient);
+    } catch (err) {
+      this.#events = [];
+    }
+
+    this._notify(UpdateType.INIT);
+  };
 
 
   get events() {

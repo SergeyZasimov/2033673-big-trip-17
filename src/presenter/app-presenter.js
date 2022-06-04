@@ -55,11 +55,13 @@ export default class AppPresenter {
   init = () => {
     this.#createFilters();
     this.#createNewButton();
-    this.#createSort();
     this.#renderEventsList();
   };
 
   #createSort = () => {
+    if (this.#sortComponent !== null) {
+      remove(this.#sortComponent);
+    }
     this.#sortComponent = new SortView(this.#currentSortType);
     render(this.#sortComponent, this.#mainBoard, RenderPosition.AFTERBEGIN);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
@@ -80,6 +82,14 @@ export default class AppPresenter {
   #createNoEvents = () => {
     this.#noEventsComponent = new NoEventsView(this.#filterModel.filterType);
     render(this.#noEventsComponent, this.#mainBoard, RenderPosition.AFTERBEGIN);
+  };
+
+  #removeNoEvents = () => {
+    if (this.#noEventsComponent === null) {
+      return;
+    }
+    remove(this.#noEventsComponent);
+    this.#noEventsComponent = null;
   };
 
   #createNewButton = () => {
@@ -117,6 +127,7 @@ export default class AppPresenter {
     if (!this.events.length) {
       this.#createNoEvents();
     } else {
+      this.#createSort();
       render(this.#eventsListComponent, this.#mainBoard);
       this.events.forEach((event) => this.#createEvent(event));
     }
@@ -156,6 +167,9 @@ export default class AppPresenter {
         this.#resetSort();
         this.#renderEventsList();
         break;
+      case UpdateType.INIT:
+        this.#removeNoEvents();
+        this.#resetFilters();
     }
   };
 

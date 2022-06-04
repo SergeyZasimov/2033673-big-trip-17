@@ -14,7 +14,7 @@ const createEventEditTemplate = (state) => {
   const eventTypeOffers = (offersAll
     .find((item) => item.type === type)).offers;
 
-  const eventDestination = destinations.find((item) => item.name === destination);
+  // const eventDestination = destinations.find((item) => item.name === destination);
 
   const capitalise = (word) => word.slice(0, 1).toUpperCase() + word.slice(1);
 
@@ -51,7 +51,7 @@ const createEventEditTemplate = (state) => {
             <label class="event__label  event__type-output" for="event-destination-${ id }">
               ${ type }
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-${ id }" type="text" name="event-destination" value="${ eventDestination ? eventDestination.name : '' }" list="destination-list-${ id }" autocomplete="off">
+            <input class="event__input  event__input--destination" id="event-destination-${ id }" type="text" name="event-destination" value="${ destination ? destination.name : '' }" list="destination-list-${ id }" autocomplete="off">
             <datalist id="destination-list-${ id }">
               <option value="Amsterdam"></option>
               <option value="Geneva"></option>
@@ -106,12 +106,12 @@ const createEventEditTemplate = (state) => {
           </section>
 ${ destination ? `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      <p class="event__destination-description">${ eventDestination.description }</p>
+      <p class="event__destination-description">${ destination.description }</p>
       <div class="event__photos-container">
         <div class="event__photos-tape">
 
-          ${ eventDestination.pictures.length !== 0
-      ? eventDestination.pictures.map((image) => (
+          ${ destination.pictures.length !== 0
+      ? destination.pictures.map((image) => (
         `<img class="event__photo" src="${ image.src }" alt="${ image.description }">`
       )).join('')
       : ''

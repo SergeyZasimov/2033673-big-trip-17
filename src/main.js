@@ -22,3 +22,4 @@ const filterModel = new FiltersModel();
 const appPresenter = new AppPresenter(mainEventsBoard, headerInfo, headerControlsFilters, eventsModel, filterModel);
 
 appPresenter.init();
+eventsModel.init();
