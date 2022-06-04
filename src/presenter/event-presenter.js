@@ -9,6 +9,7 @@ export default class EventPresenter {
   #eventsListContainer = null;
   #removeNewEventForm = null;
   #offersModel = null;
+  #destinationsModel = null;
 
   #event = null;
   #mode = Mode.DEFAULT;
@@ -16,11 +17,12 @@ export default class EventPresenter {
   #changeData = null;
   #changeMode = null;
 
-  constructor(eventsListContainer, changeData, changeMode, offersModel, removeNewEventForm) {
+  constructor(eventsListContainer, changeData, changeMode, offersModel, destinationsModel, removeNewEventForm) {
     this.#eventsListContainer = eventsListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
     this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
     this.#removeNewEventForm = removeNewEventForm;
   }
 
@@ -56,7 +58,7 @@ export default class EventPresenter {
   };
 
   #replaceEventToEdit = () => {
-    this.#eventEditComponent = new EventEditView(this.#event, this.#offersModel.offers);
+    this.#eventEditComponent = new EventEditView(this.#event, this.#offersModel.offers, this.#destinationsModel.destinations);
 
     this.#eventEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#eventEditComponent.setCloseFormHandler(this.#handleCloseForm);

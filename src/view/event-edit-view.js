@@ -5,8 +5,7 @@ import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
-const createEventEditTemplate = (state, allOffers) => {
-
+const createEventEditTemplate = (state, allOffers, allDestinations) => {
   const { type, destination, basePrice, dateFrom, dateTo, id, offers, isNewEvent } = state;
 
   const eventTypeOffers = (allOffers
@@ -49,9 +48,7 @@ const createEventEditTemplate = (state, allOffers) => {
             </label>
             <input class="event__input  event__input--destination" id="event-destination-${ id }" type="text" name="event-destination" value="${ destination ? destination.name : '' }" list="destination-list-${ id }" autocomplete="off">
             <datalist id="destination-list-${ id }">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
+            ${ allDestinations.map((item) => `<option value="${ item.name }"></option>`).join('') }
             </datalist>
           </div>
 
@@ -125,17 +122,19 @@ ${ destination ? `<section class="event__section  event__section--destination">
 export default class EventEditView extends AbstractStatefulView {
   #datepicker = null;
   #allOffers = null;
+  #allDestinations = null;
 
-  constructor(event = DEFAULT_EVENT, allOffers) {
+  constructor(event = DEFAULT_EVENT, allOffers, allDestinations) {
     super();
     this._state = EventEditView.convertEventToState(event);
     this.#allOffers = allOffers;
+    this.#allDestinations = allDestinations;
     this.#setInnerHandlers();
     this.#setDatePicker();
   }
 
   get template() {
-    return createEventEditTemplate(this._state, this.#allOffers);
+    return createEventEditTemplate(this._state, this.#allOffers, this.#allDestinations);
   }
 
   static convertEventToState = (event) => {
