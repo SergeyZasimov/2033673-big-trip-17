@@ -8,6 +8,7 @@ export default class EventPresenter {
   #eventEditComponent = null;
   #eventsListContainer = null;
   #removeNewEventForm = null;
+  #offersModel = null;
 
   #event = null;
   #mode = Mode.DEFAULT;
@@ -15,10 +16,11 @@ export default class EventPresenter {
   #changeData = null;
   #changeMode = null;
 
-  constructor(eventsListContainer, changeData, changeMode, removeNewEventForm) {
+  constructor(eventsListContainer, changeData, changeMode, offersModel, removeNewEventForm) {
     this.#eventsListContainer = eventsListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
+    this.#offersModel = offersModel;
     this.#removeNewEventForm = removeNewEventForm;
   }
 
@@ -26,8 +28,7 @@ export default class EventPresenter {
     this.#event = event;
 
     const prevEventComponent = this.#eventComponent;
-
-    this.#eventComponent = new EventView(this.#event);
+    this.#eventComponent = new EventView(this.#event, this.#offersModel.offers);
     this.#eventComponent.setEditClickHandler(this.#handleEditClick);
     this.#eventComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
 
@@ -55,7 +56,7 @@ export default class EventPresenter {
   };
 
   #replaceEventToEdit = () => {
-    this.#eventEditComponent = new EventEditView(this.#event);
+    this.#eventEditComponent = new EventEditView(this.#event, this.#offersModel.offers);
 
     this.#eventEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#eventEditComponent.setCloseFormHandler(this.#handleCloseForm);

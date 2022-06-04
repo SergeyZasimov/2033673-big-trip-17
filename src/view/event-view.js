@@ -2,10 +2,10 @@ import { offersAll } from '../mock/offer.js';
 import { getDuration, getHumanizeDay, getHumanizeTime, getMarkupDate, getMarkupTime } from '../utils/date-time.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
-const createEventTemplate = (event) => {
+const createEventTemplate = (event, allOffers) => {
   const { type, destination, basePrice, isFavorite, dateFrom, dateTo } = event;
 
-  const eventTypeOffers = (offersAll
+  const eventTypeOffers = (allOffers
     .find((item) => item.type === event.type)).offers
     .filter((item) => event.offers.includes(item.id));
 
@@ -68,14 +68,16 @@ const createEventTemplate = (event) => {
 
 export default class EventView extends AbstractView {
   #event = null;
+  #allOffers = null;
 
-  constructor(event) {
+  constructor(event, allOffers) {
     super();
     this.#event = event;
+    this.#allOffers = allOffers;
   }
 
   get template() {
-    return createEventTemplate(this.#event);
+    return createEventTemplate(this.#event, this.#allOffers);
   }
 
   setEditClickHandler = (callback) => {

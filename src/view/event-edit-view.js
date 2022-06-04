@@ -1,5 +1,3 @@
-import { offersAll } from '../mock/offer.js';
-import { destinations } from '../mock/destination.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getEditTime } from '../utils/date-time.js';
 import { DEFAULT_EVENT, EVENT_TYPES } from '../utils/settings.js';
@@ -7,14 +5,12 @@ import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
-const createEventEditTemplate = (state) => {
+const createEventEditTemplate = (state, allOffers) => {
 
   const { type, destination, basePrice, dateFrom, dateTo, id, offers, isNewEvent } = state;
 
-  const eventTypeOffers = (offersAll
+  const eventTypeOffers = (allOffers
     .find((item) => item.type === type)).offers;
-
-  // const eventDestination = destinations.find((item) => item.name === destination);
 
   const capitalise = (word) => word.slice(0, 1).toUpperCase() + word.slice(1);
 
@@ -82,7 +78,8 @@ const createEventEditTemplate = (state) => {
           </button>
         </header>
         <section class="event__details">
-          <section class="event__section  event__section--offers">
+        ${ eventTypeOffers.length ?
+      `<section class="event__section  event__section--offers">
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
             <div class="event__available-offers">
 
@@ -103,7 +100,7 @@ const createEventEditTemplate = (state) => {
               </div>
             `).join('') }
             </div>
-          </section>
+          </section>` : '' }
 ${ destination ? `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${ destination.description }</p>
@@ -127,16 +124,18 @@ ${ destination ? `<section class="event__section  event__section--destination">
 
 export default class EventEditView extends AbstractStatefulView {
   #datepicker = null;
+  #allOffers = null;
 
-  constructor(event = DEFAULT_EVENT) {
+  constructor(event = DEFAULT_EVENT, allOffers) {
     super();
     this._state = EventEditView.convertEventToState(event);
+    this.#allOffers = allOffers;
     this.#setInnerHandlers();
     this.#setDatePicker();
   }
 
   get template() {
-    return createEventEditTemplate(this._state);
+    return createEventEditTemplate(this._state, this.#allOffers);
   }
 
   static convertEventToState = (event) => {
@@ -178,7 +177,7 @@ export default class EventEditView extends AbstractStatefulView {
     this.element.querySelector('.event__input--destination').addEventListener('focus', this.#focusDestinationHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeDestinationHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#inputPriceHandler);
-    this.element.querySelector('.event__available-offers').addEventListener('change', this.#changeOfferHandler);
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#changeOfferHandler);
 
   };
 
