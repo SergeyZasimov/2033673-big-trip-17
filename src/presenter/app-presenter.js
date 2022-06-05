@@ -9,6 +9,7 @@ import { filters } from '../utils/filter.js';
 import NewEventButtonView from '../view/new-event-button-view';
 import NewEventPresenter from './new-event-presenter';
 import FilterPresenter from './filter-presenter';
+import LoadingView from '../view/loading-view';
 
 
 export default class AppPresenter {
@@ -25,6 +26,8 @@ export default class AppPresenter {
   #currentSortType = SortType.DEFAULT;
   #newEventPresenter = null;
   #filtersPresenter = null;
+  #isLoading = true;
+  #loadingComponent = null;
 
   constructor(eventsContainer, infoContainer, filtersContainer, eventsModel, filterModel) {
     this.#mainBoard = eventsContainer;
@@ -84,6 +87,11 @@ export default class AppPresenter {
     render(this.#noEventsComponent, this.#mainBoard, RenderPosition.AFTERBEGIN);
   };
 
+  #createLoadingComponent = () => {
+    this.#loadingComponent = new LoadingView();
+    render(this.#loadingComponent, this.#mainBoard, RenderPosition.AFTERBEGIN);
+  };
+
   #removeNoEvents = () => {
     if (this.#noEventsComponent === null) {
       return;
@@ -124,6 +132,11 @@ export default class AppPresenter {
   };
 
   #renderEventsList = () => {
+    if (this.#isLoading) {
+      this.#createLoadingComponent();
+      return;
+    }
+
     if (!this.events.length) {
       this.#createNoEvents();
     } else {
@@ -168,7 +181,8 @@ export default class AppPresenter {
         this.#renderEventsList();
         break;
       case UpdateType.INIT:
-        this.#removeNoEvents();
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#resetFilters();
     }
   };
