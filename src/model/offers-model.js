@@ -1,20 +1,19 @@
+import OffersApiService from '../api-services/offers-api-service';
+import { AUTHORIZATION, END_POINT } from '../utils/settings';
+
 export default class OffersModel {
-  #offers = null;
-  #offersApiService = null;
+  static #offers = null;
+  static #offersApiService = new OffersApiService(END_POINT, AUTHORIZATION);
 
-  constructor(offersApiService) {
-    this.#offersApiService = offersApiService;
-  }
-
-  init = async () => {
+  static init = async () => {
     try {
-      this.#offers = await this.#offersApiService.offers;
+      OffersModel.#offers = await OffersModel.#offersApiService.offers;
     } catch (err) {
-      this.#offers = [];
+      OffersModel.#offers = [];
     }
   };
 
-  get offers() {
-    return this.#offers;
+  static get offers() {
+    return OffersModel.#offers;
   }
 }

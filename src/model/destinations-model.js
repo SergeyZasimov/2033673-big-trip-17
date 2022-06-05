@@ -1,21 +1,20 @@
+import DestinationsApiService from '../api-services/destinations-api-service';
+import { AUTHORIZATION, END_POINT } from '../utils/settings';
+
 export default class DestinationsModel {
-  #destinations = null;
-  #destinationsApiService = null;
+  static #destinations = null;
+  static #destinationsApiService = new DestinationsApiService(END_POINT, AUTHORIZATION);
 
 
-  constructor(destinationsApiService) {
-    this.#destinationsApiService = destinationsApiService;
-  }
-
-  init = async () => {
+  static init = async () => {
     try {
-      this.#destinations = await this.#destinationsApiService.destinations;
+      DestinationsModel.#destinations = await DestinationsModel.#destinationsApiService.destinations;
     } catch (err) {
-      this.#destinations = [];
+      DestinationsModel.#destinations = [];
     }
   };
 
-  get destinations() {
-    return this.#destinations;
+  static get destinations() {
+    return DestinationsModel.#destinations;
   }
 }

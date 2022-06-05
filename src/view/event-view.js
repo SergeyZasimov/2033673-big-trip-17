@@ -1,4 +1,3 @@
-import { offersAll } from '../mock/offer.js';
 import { getDuration, getHumanizeDay, getHumanizeTime, getMarkupDate, getMarkupTime } from '../utils/date-time.js';
 import AbstractView from '../framework/view/abstract-view.js';
 

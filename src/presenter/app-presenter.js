@@ -25,17 +25,13 @@ export default class AppPresenter {
   #currentSortType = SortType.DEFAULT;
   #newEventPresenter = null;
   #filtersPresenter = null;
-  #offersModel = null;
-  #destinationsModel = null;
 
-  constructor(eventsContainer, infoContainer, filtersContainer, eventsModel, filterModel, offersModel, destinationsModel) {
+  constructor(eventsContainer, infoContainer, filtersContainer, eventsModel, filterModel) {
     this.#mainBoard = eventsContainer;
     this.#infoContainer = infoContainer;
     this.#filtersContainer = filtersContainer;
     this.#eventsModel = eventsModel;
     this.#filterModel = filterModel;
-    this.#offersModel = offersModel;
-    this.#destinationsModel = destinationsModel;
 
     this.#eventsListComponent = new EventsListView();
     this.#eventsModel.addObserver(this.#handleModelEvent);
@@ -121,8 +117,6 @@ export default class AppPresenter {
       this.#eventsListComponent.element,
       this.#handleViewAction,
       this.#handleModeChange,
-      this.#offersModel,
-      this.#destinationsModel,
       this.#newEventPresenter.destroy
     );
     eventPresenter.init(event);

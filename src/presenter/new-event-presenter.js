@@ -1,5 +1,5 @@
 import { remove, render, RenderPosition } from '../framework/render';
-import { UpdateType, UserAction } from '../utils/settings';
+import { DEFAULT_EVENT, UpdateType, UserAction } from '../utils/settings';
 import { nanoid } from 'nanoid';
 import EventEditView from '../view/event-edit-view';
 
@@ -12,11 +12,15 @@ export default class NewEventPresenter {
   #rerenderSort = null;
   #rerenderFilters = null;
   #filterModel = null;
+  #offersModel = null;
+  #destinationsModel = null;
 
-  constructor(eventListComponent, newEventButtonComponent, filterModel, changeData, changeMode, rerenderSort, rerenderFilters) {
+  constructor(eventListComponent, newEventButtonComponent, filterModel, offersModel, destinatinosModel, changeData, changeMode, rerenderSort, rerenderFilters) {
     this.#eventListComponent = eventListComponent;
     this.#newEventButtonComponent = newEventButtonComponent;
     this.#filterModel = filterModel;
+    this.#offersModel = offersModel;
+    this.#destinationsModel = destinatinosModel;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
     this.#rerenderSort = rerenderSort;
@@ -40,7 +44,7 @@ export default class NewEventPresenter {
   };
 
   #handleNewEventClick = () => {
-    this.#eventEditComponent = new EventEditView();
+    this.#eventEditComponent = new EventEditView(DEFAULT_EVENT, this.#offersModel.offers, this.#destinationsModel.destinations);
     this.#eventEditComponent.setFormSubmitHandler(this.#handleSubmitClick);
     this.#eventEditComponent.setCloseFormHandler(this.#handleResetClick);
     this.#eventEditComponent.setResetHandler(this.#handleResetClick);

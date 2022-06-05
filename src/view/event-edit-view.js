@@ -1,6 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getEditTime } from '../utils/date-time.js';
-import { DEFAULT_EVENT, EVENT_TYPES } from '../utils/settings.js';
+import { EVENT_TYPES } from '../utils/settings.js';
 import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
@@ -8,8 +8,8 @@ import 'flatpickr/dist/flatpickr.min.css';
 const createEventEditTemplate = (state, allOffers, allDestinations) => {
   const { type, destination, basePrice, dateFrom, dateTo, id, offers, isNewEvent } = state;
 
-  const eventTypeOffers = (allOffers
-    .find((item) => item.type === type)).offers;
+  const typeOffers = (allOffers.find((item) => item.type === type)).offers;
+
 
   const capitalise = (word) => word.slice(0, 1).toUpperCase() + word.slice(1);
 
@@ -75,12 +75,12 @@ const createEventEditTemplate = (state, allOffers, allDestinations) => {
           </button>
         </header>
         <section class="event__details">
-        ${ eventTypeOffers.length ?
+        ${ typeOffers.length ?
       `<section class="event__section  event__section--offers">
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
             <div class="event__available-offers">
 
-            ${ eventTypeOffers.map((item) => `
+            ${ typeOffers.map((item) => `
               <div class="event__offer-selector">
                 <input
                   class="event__offer-checkbox  visually-hidden"
@@ -124,7 +124,7 @@ export default class EventEditView extends AbstractStatefulView {
   #allOffers = null;
   #allDestinations = null;
 
-  constructor(event = DEFAULT_EVENT, allOffers, allDestinations) {
+  constructor(event, allOffers, allDestinations) {
     super();
     this._state = EventEditView.convertEventToState(event);
     this.#allOffers = allOffers;
@@ -208,8 +208,9 @@ export default class EventEditView extends AbstractStatefulView {
 
   #changeDestinationHandler = (evt) => {
     evt.preventDefault();
+    const eventDestination = this.#allDestinations.find((item) => item.name === evt.target.value);
     this.updateElement({
-      destination: evt.target.value
+      destination: eventDestination
     });
   };
 
