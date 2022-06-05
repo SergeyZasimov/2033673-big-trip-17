@@ -9,7 +9,6 @@ export default class EventPresenter {
   #eventComponent = null;
   #eventEditComponent = null;
   #eventsListContainer = null;
-  #removeNewEventForm = null;
 
   #event = null;
   #mode = Mode.DEFAULT;
@@ -18,11 +17,10 @@ export default class EventPresenter {
   #changeData = null;
   #changeMode = null;
 
-  constructor(eventsListContainer, changeData, changeMode, removeNewEventForm) {
+  constructor(eventsListContainer, changeData, changeMode) {
     this.#eventsListContainer = eventsListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
-    this.#removeNewEventForm = removeNewEventForm;
   }
 
   init = (event) => {
@@ -77,7 +75,6 @@ export default class EventPresenter {
   };
 
   #handleEditClick = () => {
-    this.#removeNewEventForm();
     this.#replaceEventToEdit();
   };
 

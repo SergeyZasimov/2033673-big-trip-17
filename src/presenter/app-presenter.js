@@ -6,7 +6,6 @@ import EventPresenter from './event-presenter.js';
 import { timeCompare, priceCompare, dayCompare } from '../utils/sort.js';
 import { FilterType, SortType, UpdateType, UserAction } from '../utils/settings.js';
 import { filters } from '../utils/filter.js';
-import NewEventButtonView from '../view/new-event-button-view';
 import NewEventPresenter from './new-event-presenter';
 import FilterPresenter from './filter-presenter';
 import LoadingView from '../view/loading-view';
@@ -57,8 +56,15 @@ export default class AppPresenter {
 
   init = () => {
     this.#createFilters();
-    this.#createNewButton();
     this.#renderEventsList();
+  };
+
+  createNewEvent = (handleNewEventFormClose) => {
+    this.#newEventPresenter = new NewEventPresenter(this.#eventsListComponent.element, this.#handleViewAction, handleNewEventFormClose);
+    this.#currentSortType = SortType.DEFAULT;
+    this.#filterModel.setFilterType(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newEventPresenter.init();
+    this.#eventsDict.set('new_event', this.#newEventPresenter);
   };
 
   #createSort = () => {
@@ -92,29 +98,6 @@ export default class AppPresenter {
     render(this.#loadingComponent, this.#mainBoard, RenderPosition.AFTERBEGIN);
   };
 
-  #removeNoEvents = () => {
-    if (this.#noEventsComponent === null) {
-      return;
-    }
-    remove(this.#noEventsComponent);
-    this.#noEventsComponent = null;
-  };
-
-  #createNewButton = () => {
-    this.#newButtonComponent = new NewEventButtonView();
-    render(this.#newButtonComponent, this.#infoContainer);
-    this.#newEventPresenter = new NewEventPresenter(
-      this.#eventsListComponent.element,
-      this.#newButtonComponent,
-      this.#filterModel,
-      this.#handleViewAction,
-      this.#handleModeChange,
-      this.#resetSort,
-      this.#resetFilters
-    );
-    this.#newEventPresenter.init();
-  };
-
   #createFilters = () => {
     this.#filtersPresenter = new FilterPresenter(this.#filtersContainer, this.#eventsModel, this.#filterModel);
     this.#filtersPresenter.init();
@@ -125,7 +108,6 @@ export default class AppPresenter {
       this.#eventsListComponent.element,
       this.#handleViewAction,
       this.#handleModeChange,
-      this.#newEventPresenter.destroy
     );
     eventPresenter.init(event);
     this.#eventsDict.set(event.id, eventPresenter);

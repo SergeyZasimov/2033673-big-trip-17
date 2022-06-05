@@ -8,6 +8,8 @@ import DestinationsModel from './model/destinations-model';
 import DestinationsApiService from './api-services/destinations-api-service';
 import { AUTHORIZATION, END_POINT } from './utils/settings';
 import OffersModel from './model/offers-model';
+import { finalize } from '@babel/core/lib/config/helpers/deep-array';
+import NewEventButtonView from './view/new-event-button-view';
 
 const headerInfo = document.querySelector('.trip-main');
 const headerControlsFilters = document.querySelector('.trip-controls__filters');
@@ -16,6 +18,7 @@ const mainEventsBoard = document.querySelector('.page-main').querySelector('.tri
 
 
 render(new InfoView(), headerInfo, RenderPosition.AFTERBEGIN);
+const newEventButtonComponent = new NewEventButtonView();
 
 const eventsModel = new EventsModel(new EventsApiService(END_POINT, AUTHORIZATION));
 const filterModel = new FiltersModel();
@@ -28,8 +31,21 @@ const appPresenter = new AppPresenter(
   filterModel,
 );
 
+const handleNewButtonFormClose = () => {
+  newEventButtonComponent.element.removeAttribute('disabled');
+};
+
+const handleNewEventButtonClick = () => {
+  appPresenter.createNewEvent(handleNewButtonFormClose);
+  newEventButtonComponent.element.setAttribute('disabled', true);
+};
+
 
 OffersModel.init()
   .then(() => DestinationsModel.init())
-  .then(() => eventsModel.init());
+  .then(() => eventsModel.init())
+  .finally(() => {
+    render(newEventButtonComponent, headerInfo);
+    newEventButtonComponent.setNewEventClickHandler(handleNewEventButtonClick);
+  });
 appPresenter.init();

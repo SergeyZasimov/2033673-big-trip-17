@@ -2,57 +2,41 @@ import { remove, render, RenderPosition } from '../framework/render';
 import { DEFAULT_EVENT, UpdateType, UserAction } from '../utils/settings';
 import { nanoid } from 'nanoid';
 import EventEditView from '../view/event-edit-view';
+import OffersModel from '../model/offers-model';
+import DestinationsModel from '../model/destinations-model';
 
 export default class NewEventPresenter {
   #eventListComponent = null;
-  #newEventButtonComponent = null;
   #eventEditComponent = null;
   #changeData = null;
-  #changeMode = null;
-  #rerenderSort = null;
-  #rerenderFilters = null;
-  #filterModel = null;
-  #offersModel = null;
-  #destinationsModel = null;
+  #allOffers = OffersModel.offers;
+  #allDestinations = DestinationsModel.destinations;
+  #handleNewEventFormClose = null;
 
-  constructor(eventListComponent, newEventButtonComponent, filterModel, offersModel, destinatinosModel, changeData, changeMode, rerenderSort, rerenderFilters) {
+  constructor(eventListComponent, changeData, handleNewEventFormClose) {
     this.#eventListComponent = eventListComponent;
-    this.#newEventButtonComponent = newEventButtonComponent;
-    this.#filterModel = filterModel;
-    this.#offersModel = offersModel;
-    this.#destinationsModel = destinatinosModel;
     this.#changeData = changeData;
-    this.#changeMode = changeMode;
-    this.#rerenderSort = rerenderSort;
-    this.#rerenderFilters = rerenderFilters;
+    this.#handleNewEventFormClose = handleNewEventFormClose;
   }
 
   init = () => {
-    this.#newEventButtonComponent.setNewEventClickHandler(this.#handleNewEventClick);
+    this.#handleNewEventClick();
     document.addEventListener('keydown', this.#onEscKeydownHandler);
   };
 
   destroy = () => {
-    if (this.#eventEditComponent === null) {
-      return;
-    }
     remove(this.#eventEditComponent);
-    this.#eventEditComponent = null;
-
-    this.#newEventButtonComponent.element.removeAttribute('disabled');
     document.removeEventListener('click', this.#onEscKeydownHandler);
+    this.#handleNewEventFormClose();
   };
 
+  resetView = () => this.destroy();
+
   #handleNewEventClick = () => {
-    this.#eventEditComponent = new EventEditView(DEFAULT_EVENT, this.#offersModel.offers, this.#destinationsModel.destinations);
+    this.#eventEditComponent = new EventEditView(DEFAULT_EVENT, this.#allOffers, this.#allDestinations);
     this.#eventEditComponent.setFormSubmitHandler(this.#handleSubmitClick);
     this.#eventEditComponent.setCloseFormHandler(this.#handleResetClick);
     this.#eventEditComponent.setResetHandler(this.#handleResetClick);
-
-    this.#newEventButtonComponent.element.setAttribute('disabled', true);
-    this.#changeMode();
-    this.#rerenderSort();
-    this.#rerenderFilters();
     render(this.#eventEditComponent, this.#eventListComponent, RenderPosition.AFTERBEGIN);
 
   };
@@ -75,6 +59,5 @@ export default class NewEventPresenter {
       evt.preventDefault();
       this.destroy();
     }
-
   };
 }
