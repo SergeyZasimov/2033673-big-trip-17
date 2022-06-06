@@ -2,32 +2,32 @@ import { remove, render, replace } from '../framework/render.js';
 import EventView from '../view/event-view.js';
 import EventEditView from '../view/event-edit-view.js';
 import { Mode, UpdateType, UserAction } from '../utils/settings.js';
+import OffersModel from '../model/offers-model';
+import DestinationsModel from '../model/destinations-model';
 
 export default class EventPresenter {
   #eventComponent = null;
   #eventEditComponent = null;
   #eventsListContainer = null;
-  #removeNewEventForm = null;
 
   #event = null;
   #mode = Mode.DEFAULT;
-
+  #allOffers = OffersModel.offers;
+  #allDestinations = DestinationsModel.destinations;
   #changeData = null;
   #changeMode = null;
 
-  constructor(eventsListContainer, changeData, changeMode, removeNewEventForm) {
+  constructor(eventsListContainer, changeData, changeMode) {
     this.#eventsListContainer = eventsListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
-    this.#removeNewEventForm = removeNewEventForm;
   }
 
   init = (event) => {
     this.#event = event;
 
     const prevEventComponent = this.#eventComponent;
-
-    this.#eventComponent = new EventView(this.#event);
+    this.#eventComponent = new EventView(this.#event, this.#allOffers);
     this.#eventComponent.setEditClickHandler(this.#handleEditClick);
     this.#eventComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
 
@@ -55,7 +55,7 @@ export default class EventPresenter {
   };
 
   #replaceEventToEdit = () => {
-    this.#eventEditComponent = new EventEditView(this.#event);
+    this.#eventEditComponent = new EventEditView(this.#event, this.#allOffers, this.#allDestinations);
 
     this.#eventEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#eventEditComponent.setCloseFormHandler(this.#handleCloseForm);
@@ -75,7 +75,6 @@ export default class EventPresenter {
   };
 
   #handleEditClick = () => {
-    this.#removeNewEventForm();
     this.#replaceEventToEdit();
   };
 

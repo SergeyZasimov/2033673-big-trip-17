@@ -1,20 +1,15 @@
-import { offersAll } from '../mock/offer.js';
-import { destinations } from '../mock/destination.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getEditTime } from '../utils/date-time.js';
-import { DEFAULT_EVENT, EVENT_TYPES } from '../utils/settings.js';
+import { EVENT_TYPES } from '../utils/settings.js';
 import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
-const createEventEditTemplate = (state) => {
-
+const createEventEditTemplate = (state, allOffers, allDestinations) => {
   const { type, destination, basePrice, dateFrom, dateTo, id, offers, isNewEvent } = state;
 
-  const eventTypeOffers = (offersAll
-    .find((item) => item.type === type)).offers;
+  const typeOffers = (allOffers.find((item) => item.type === type)).offers;
 
-  const eventDestination = destinations.find((item) => item.name === destination);
 
   const capitalise = (word) => word.slice(0, 1).toUpperCase() + word.slice(1);
 
@@ -51,11 +46,9 @@ const createEventEditTemplate = (state) => {
             <label class="event__label  event__type-output" for="event-destination-${ id }">
               ${ type }
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-${ id }" type="text" name="event-destination" value="${ eventDestination ? eventDestination.name : '' }" list="destination-list-${ id }" autocomplete="off">
+            <input class="event__input  event__input--destination" id="event-destination-${ id }" type="text" name="event-destination" value="${ destination ? destination.name : '' }" list="destination-list-${ id }" autocomplete="off">
             <datalist id="destination-list-${ id }">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
+            ${ allDestinations.map((item) => `<option value="${ item.name }"></option>`).join('') }
             </datalist>
           </div>
 
@@ -82,11 +75,12 @@ const createEventEditTemplate = (state) => {
           </button>
         </header>
         <section class="event__details">
-          <section class="event__section  event__section--offers">
+        ${ typeOffers.length ?
+      `<section class="event__section  event__section--offers">
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
             <div class="event__available-offers">
 
-            ${ eventTypeOffers.map((item) => `
+            ${ typeOffers.map((item) => `
               <div class="event__offer-selector">
                 <input
                   class="event__offer-checkbox  visually-hidden"
@@ -103,15 +97,15 @@ const createEventEditTemplate = (state) => {
               </div>
             `).join('') }
             </div>
-          </section>
+          </section>` : '' }
 ${ destination ? `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      <p class="event__destination-description">${ eventDestination.description }</p>
+      <p class="event__destination-description">${ destination.description }</p>
       <div class="event__photos-container">
         <div class="event__photos-tape">
 
-          ${ eventDestination.pictures.length !== 0
-      ? eventDestination.pictures.map((image) => (
+          ${ destination.pictures.length !== 0
+      ? destination.pictures.map((image) => (
         `<img class="event__photo" src="${ image.src }" alt="${ image.description }">`
       )).join('')
       : ''
@@ -127,16 +121,20 @@ ${ destination ? `<section class="event__section  event__section--destination">
 
 export default class EventEditView extends AbstractStatefulView {
   #datepicker = null;
+  #allOffers = null;
+  #allDestinations = null;
 
-  constructor(event = DEFAULT_EVENT) {
+  constructor(event, allOffers, allDestinations) {
     super();
     this._state = EventEditView.convertEventToState(event);
+    this.#allOffers = allOffers;
+    this.#allDestinations = allDestinations;
     this.#setInnerHandlers();
     this.#setDatePicker();
   }
 
   get template() {
-    return createEventEditTemplate(this._state);
+    return createEventEditTemplate(this._state, this.#allOffers, this.#allDestinations);
   }
 
   static convertEventToState = (event) => {
@@ -178,7 +176,7 @@ export default class EventEditView extends AbstractStatefulView {
     this.element.querySelector('.event__input--destination').addEventListener('focus', this.#focusDestinationHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#changeDestinationHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#inputPriceHandler);
-    this.element.querySelector('.event__available-offers').addEventListener('change', this.#changeOfferHandler);
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#changeOfferHandler);
 
   };
 
@@ -210,8 +208,9 @@ export default class EventEditView extends AbstractStatefulView {
 
   #changeDestinationHandler = (evt) => {
     evt.preventDefault();
+    const eventDestination = this.#allDestinations.find((item) => item.name === evt.target.value);
     this.updateElement({
-      destination: evt.target.value
+      destination: eventDestination
     });
   };
 
@@ -249,8 +248,7 @@ export default class EventEditView extends AbstractStatefulView {
         defaultDate: [this._state.dateFrom, this._state.dateTo],
         dateFormat: 'd/m/y H:S',
         enableTime: true,
-        // eslint-disable-next-line camelcase
-        time_24hr: true,
+        ['time_24hr']: true,
         onChange: this.#changeTimeHandler,
       }
     );

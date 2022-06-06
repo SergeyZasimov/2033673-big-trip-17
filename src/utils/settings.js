@@ -3,6 +3,10 @@ import { getEditTime } from './date-time';
 
 const EVENT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
+const AUTHORIZATION = 'Basic aq38ik$55ks';
+
+const END_POINT = 'https://17.ecmascript.pages.academy/big-trip';
+
 const DEFAULT_EVENT = {
   type: 'taxi',
   destination: null,
@@ -40,8 +44,14 @@ const UserAction = {
 const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
-  MAJOR: 'MAJOR'
+  MAJOR: 'MAJOR',
+  INIT: 'INIT,'
+};
+
+const HTTPMethods = {
+  GET: 'GET',
+  PUT: 'PUT',
 };
 
 
-export { EVENT_TYPES, DEFAULT_EVENT, SortType, Mode, FilterType, UserAction, UpdateType };
+export { EVENT_TYPES, DEFAULT_EVENT, SortType, Mode, FilterType, UserAction, UpdateType, AUTHORIZATION, END_POINT, HTTPMethods };
