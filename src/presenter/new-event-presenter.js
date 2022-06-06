@@ -1,6 +1,5 @@
 import { remove, render, RenderPosition } from '../framework/render';
 import { DEFAULT_EVENT, UpdateType, UserAction } from '../utils/settings';
-import { nanoid } from 'nanoid';
 import EventEditView from '../view/event-edit-view';
 import OffersModel from '../model/offers-model';
 import DestinationsModel from '../model/destinations-model';
@@ -45,7 +44,7 @@ export default class NewEventPresenter {
     this.#changeData(
       UserAction.ADD_EVENT,
       UpdateType.MAJOR,
-      { id: nanoid(), ...event }
+      event
     );
     this.destroy();
   };

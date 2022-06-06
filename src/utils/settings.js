@@ -14,6 +14,7 @@ const DEFAULT_EVENT = {
   dateFrom: getEditTime(dayjs()),
   dateTo: getEditTime(dayjs()),
   offers: [],
+  isFavorite: false
 };
 
 const SortType = {

@@ -1,5 +1,6 @@
 import ApiService from '../framework/api-service';
 import { HTTPMethods } from '../utils/settings';
+import dayjs from 'dayjs';
 
 
 export default class EventsApiService extends ApiService {
@@ -27,7 +28,6 @@ export default class EventsApiService extends ApiService {
       body: JSON.stringify(this.#adaptToServer(event)),
       headers: new Headers({ 'Content-Type': 'application/json' })
     });
-
     return ApiService.parseResponse(response);
   };
 
@@ -41,9 +41,9 @@ export default class EventsApiService extends ApiService {
   #adaptToServer = (event) => {
     const adaptedEvent = {
       ...event,
-      ['base_price']: event.basePrice,
-      ['date_to']: event.dateTo,
-      ['date_from']: event.dateFrom,
+      ['base_price']: +event.basePrice,
+      ['date_to']: dayjs(event.dateTo).toISOString(),
+      ['date_from']: dayjs(event.dateFrom).toISOString(),
       ['is_favorite']: event.isFavorite
     };
 
