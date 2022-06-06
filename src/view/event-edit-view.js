@@ -248,8 +248,7 @@ export default class EventEditView extends AbstractStatefulView {
         defaultDate: [this._state.dateFrom, this._state.dateTo],
         dateFormat: 'd/m/y H:S',
         enableTime: true,
-        // eslint-disable-next-line camelcase
-        time_24hr: true,
+        ['time_24hr']: true,
         onChange: this.#changeTimeHandler,
       }
     );

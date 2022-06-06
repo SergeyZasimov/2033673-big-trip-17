@@ -23,10 +23,10 @@ export default class EventsApiService extends ApiService {
   #adaptToServer = (event) => {
     const adaptedEvent = {
       ...event,
-      base_price: event.basePrice,
-      date_to: event.dateTo,
-      date_from: event.dateFrom,
-      is_favorite: event.isFavorite
+      ['base_price']: event.basePrice,
+      ['date_to']: event.dateTo,
+      ['date_from']: event.dateFrom,
+      ['is_favorite']: event.isFavorite
     };
 
     delete adaptedEvent.basePrice;

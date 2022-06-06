@@ -5,10 +5,8 @@ import EventsModel from './model/events-model.js';
 import FiltersModel from './model/filters-model';
 import EventsApiService from './api-services/events-api-service';
 import DestinationsModel from './model/destinations-model';
-import DestinationsApiService from './api-services/destinations-api-service';
 import { AUTHORIZATION, END_POINT } from './utils/settings';
 import OffersModel from './model/offers-model';
-import { finalize } from '@babel/core/lib/config/helpers/deep-array';
 import NewEventButtonView from './view/new-event-button-view';
 
 const headerInfo = document.querySelector('.trip-main');

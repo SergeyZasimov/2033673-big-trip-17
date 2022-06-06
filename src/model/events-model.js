@@ -1,6 +1,5 @@
 import Observable from '../framework/observable.js';
 import { UpdateType } from '../utils/settings';
-import EventsApiService from '../api-services/events-api-service';
 
 export default class EventsModel extends Observable {
   #eventsApiService = null;
