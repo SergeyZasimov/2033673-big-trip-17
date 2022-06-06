@@ -48,5 +48,10 @@ const UpdateType = {
   INIT: 'INIT,'
 };
 
+const HTTPMethods = {
+  GET: 'GET',
+  PUT: 'PUT',
+};
 
-export { EVENT_TYPES, DEFAULT_EVENT, SortType, Mode, FilterType, UserAction, UpdateType, AUTHORIZATION, END_POINT };
+
+export { EVENT_TYPES, DEFAULT_EVENT, SortType, Mode, FilterType, UserAction, UpdateType, AUTHORIZATION, END_POINT, HTTPMethods };

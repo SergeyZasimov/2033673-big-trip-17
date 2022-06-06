@@ -1,5 +1,6 @@
 import Observable from '../framework/observable.js';
 import { UpdateType } from '../utils/settings';
+import EventsApiService from '../api-services/events-api-service';
 
 export default class EventsModel extends Observable {
   #eventsApiService = null;
@@ -26,19 +27,24 @@ export default class EventsModel extends Observable {
     return this.#events;
   }
 
-  updateEvent = (updateType, update) => {
+  updateEvent = async (updateType, update) => {
     const index = this.#events.findIndex((item) => item.id === update.id);
     if (index === -1) {
       throw new Error('Can\'t update unexisting event');
     }
 
-    this.#events = [
-      ...this.#events.slice(0, index),
-      update,
-      ...this.#events.slice(index + 1)
-    ];
-
-    this._notify(updateType, update);
+    try {
+      const response = await this.#eventsApiService.updateEvent(update);
+      const updatedEvent = this.#adaptToClient(response);
+      this.#events = [
+        ...this.#events.slice(0, index),
+        updatedEvent,
+        ...this.#events.slice(index + 1)
+      ];
+      this._notify(updateType, update);
+    } catch (err) {
+      throw new Error('Can\'t update task');
+    }
   };
 
   addEvent = (updateType, update) => {
