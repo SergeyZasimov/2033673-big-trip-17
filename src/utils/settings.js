@@ -51,6 +51,8 @@ const UpdateType = {
 const HTTPMethods = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
 
