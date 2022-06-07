@@ -31,6 +31,24 @@ export default class NewEventPresenter {
 
   resetView = () => this.destroy();
 
+  setSaving = () => {
+    this.#eventEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true
+    });
+  };
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#eventEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+    this.#eventEditComponent.shake(resetFormState);
+  };
+
   #handleNewEventClick = () => {
     this.#eventEditComponent = new EventEditView(DEFAULT_EVENT, this.#allOffers, this.#allDestinations);
     this.#eventEditComponent.setFormSubmitHandler(this.#handleSubmitClick);
@@ -46,7 +64,6 @@ export default class NewEventPresenter {
       UpdateType.MAJOR,
       event
     );
-    this.destroy();
   };
 
   #handleResetClick = () => {

@@ -56,5 +56,22 @@ const HTTPMethods = {
   DELETE: 'DELETE',
 };
 
+const BlockerTimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000
+};
 
-export { EVENT_TYPES, DEFAULT_EVENT, SortType, Mode, FilterType, UserAction, UpdateType, AUTHORIZATION, END_POINT, HTTPMethods };
+
+export {
+  EVENT_TYPES,
+  DEFAULT_EVENT,
+  SortType,
+  Mode,
+  FilterType,
+  UserAction,
+  UpdateType,
+  AUTHORIZATION,
+  END_POINT,
+  HTTPMethods,
+  BlockerTimeLimit,
+};
