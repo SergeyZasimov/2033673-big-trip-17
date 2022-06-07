@@ -22,7 +22,7 @@ const newEventButtonComponent = new NewEventButtonView();
 const eventsModel = new EventsModel(new EventsApiService(END_POINT, AUTHORIZATION));
 const filterModel = new FiltersModel();
 
-const filtersPresenter = new FiltersPresenter(headerControlsFilters, eventsModel, filterModel)
+const filtersPresenter = new FiltersPresenter(headerControlsFilters, eventsModel, filterModel);
 
 const appPresenter = new AppPresenter(
   mainEventsBoard,
