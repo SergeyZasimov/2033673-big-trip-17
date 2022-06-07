@@ -23,14 +23,16 @@ export default class AppPresenter {
   #currentSortType = SortType.DEFAULT;
   #newEventPresenter = null;
   #filtersPresenter = null;
+  #infoPresenter = null;
   #isLoading = true;
   #loadingComponent = null;
   #uiBlocker = new UiBlocker(BlockerTimeLimit.LOWER_LIMIT, BlockerTimeLimit.UPPER_LIMIT);
 
-  constructor(eventsContainer, infoContainer, filtersPresenter, eventsModel, filterModel) {
+  constructor(eventsContainer, infoContainer, filtersPresenter, infoPresenter, eventsModel, filterModel) {
     this.#mainBoard = eventsContainer;
     this.#infoContainer = infoContainer;
     this.#filtersPresenter = filtersPresenter;
+    this.#infoPresenter = infoPresenter;
     this.#eventsModel = eventsModel;
     this.#filtersModel = filterModel;
 
@@ -54,6 +56,7 @@ export default class AppPresenter {
   }
 
   init = () => {
+    this.#infoPresenter.init();
     this.#createFilters();
     this.#renderEventsList();
   };

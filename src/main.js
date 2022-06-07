@@ -9,6 +9,7 @@ import { AUTHORIZATION, END_POINT } from './utils/settings';
 import OffersModel from './model/offers-model';
 import NewEventButtonView from './view/new-event-button-view';
 import FiltersPresenter from './presenter/filters-presenter';
+import InfoPresenter from './presenter/info-presenter';
 
 const headerInfo = document.querySelector('.trip-main');
 const headerControlsFilters = document.querySelector('.trip-controls__filters');
@@ -16,18 +17,19 @@ const headerControlsFilters = document.querySelector('.trip-controls__filters');
 const mainEventsBoard = document.querySelector('.page-main').querySelector('.trip-events');
 
 
-render(new InfoView(), headerInfo, RenderPosition.AFTERBEGIN);
 const newEventButtonComponent = new NewEventButtonView();
 
 const eventsModel = new EventsModel(new EventsApiService(END_POINT, AUTHORIZATION));
 const filterModel = new FiltersModel();
 
 const filtersPresenter = new FiltersPresenter(headerControlsFilters, eventsModel, filterModel);
+const infoPresenter = new InfoPresenter(headerInfo, eventsModel);
 
 const appPresenter = new AppPresenter(
   mainEventsBoard,
   headerInfo,
   filtersPresenter,
+  infoPresenter,
   eventsModel,
   filterModel,
 );
