@@ -8,6 +8,7 @@ import DestinationsModel from './model/destinations-model';
 import { AUTHORIZATION, END_POINT } from './utils/settings';
 import OffersModel from './model/offers-model';
 import NewEventButtonView from './view/new-event-button-view';
+import FiltersPresenter from './presenter/filters-presenter';
 
 const headerInfo = document.querySelector('.trip-main');
 const headerControlsFilters = document.querySelector('.trip-controls__filters');
@@ -21,10 +22,12 @@ const newEventButtonComponent = new NewEventButtonView();
 const eventsModel = new EventsModel(new EventsApiService(END_POINT, AUTHORIZATION));
 const filterModel = new FiltersModel();
 
+const filtersPresenter = new FiltersPresenter(headerControlsFilters, eventsModel, filterModel)
+
 const appPresenter = new AppPresenter(
   mainEventsBoard,
   headerInfo,
-  headerControlsFilters,
+  filtersPresenter,
   eventsModel,
   filterModel,
 );

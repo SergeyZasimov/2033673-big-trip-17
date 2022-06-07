@@ -3,7 +3,7 @@ import FiltersView from '../view/filters-view.js';
 import { remove, render } from '../framework/render.js';
 import { UpdateType } from '../utils/settings.js';
 
-export default class FilterPresenter {
+export default class FiltersPresenter {
   #filtersContainer = null;
   #filtersComponent = null;
   #eventsModel = null;
@@ -24,19 +24,18 @@ export default class FilterPresenter {
   }
 
   init = () => {
+    if (this.#filtersComponent !== null) {
+      remove(this.#filtersComponent);
+    }
     this.#filtersComponent = new FiltersView(this.filters, this.#filtersModel.filterType);
     this.#filtersComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
     render(this.#filtersComponent, this.#filtersContainer);
-  };
-
-  removeFilters = () => {
-    remove(this.#filtersComponent);
   };
 
   #handleFilterTypeChange = (filterType) => {
     if (this.#filtersModel.filterType === filterType) {
       return;
     }
-    this.#filtersModel.setFilterType(UpdateType.MINOR, filterType);
+    this.#filtersModel.setFilterType(UpdateType.MAJOR, filterType);
   };
 }

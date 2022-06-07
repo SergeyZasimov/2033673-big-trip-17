@@ -7,7 +7,6 @@ import { timeCompare, priceCompare, dayCompare } from '../utils/sort.js';
 import { BlockerTimeLimit, FilterType, SortType, UpdateType, UserAction } from '../utils/settings.js';
 import { filters } from '../utils/filter.js';
 import NewEventPresenter from './new-event-presenter';
-import FilterPresenter from './filter-presenter';
 import LoadingView from '../view/loading-view';
 import UiBlocker from '../framework/ui-blocker/ui-blocker';
 
@@ -15,9 +14,8 @@ import UiBlocker from '../framework/ui-blocker/ui-blocker';
 export default class AppPresenter {
   #mainBoard = null;
   #infoContainer = null;
-  #filtersContainer = null;
   #eventsModel = null;
-  #filterModel = null;
+  #filtersModel = null;
   #sortComponent = null;
   #noEventsComponent = null;
   #eventsListComponent = null;
@@ -29,20 +27,20 @@ export default class AppPresenter {
   #loadingComponent = null;
   #uiBlocker = new UiBlocker(BlockerTimeLimit.LOWER_LIMIT, BlockerTimeLimit.UPPER_LIMIT);
 
-  constructor(eventsContainer, infoContainer, filtersContainer, eventsModel, filterModel) {
+  constructor(eventsContainer, infoContainer, filtersPresenter, eventsModel, filterModel) {
     this.#mainBoard = eventsContainer;
     this.#infoContainer = infoContainer;
-    this.#filtersContainer = filtersContainer;
+    this.#filtersPresenter = filtersPresenter;
     this.#eventsModel = eventsModel;
-    this.#filterModel = filterModel;
+    this.#filtersModel = filterModel;
 
     this.#eventsListComponent = new EventsListView();
     this.#eventsModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#filtersModel.addObserver(this.#handleModelEvent);
   }
 
   get events() {
-    const filterType = this.#filterModel.filterType;
+    const filterType = this.#filtersModel.filterType;
     const events = this.#eventsModel.events;
     const filteredEvents = filters[filterType](events);
 
@@ -62,8 +60,7 @@ export default class AppPresenter {
 
   createNewEvent = (handleNewEventFormClose) => {
     this.#newEventPresenter = new NewEventPresenter(this.#eventsListComponent.element, this.#handleViewAction, handleNewEventFormClose);
-    this.#currentSortType = SortType.DEFAULT;
-    this.#filterModel.setFilterType(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#filtersModel.setFilterType(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newEventPresenter.init();
     this.#eventsDict.set('new_event', this.#newEventPresenter);
   };
@@ -77,20 +74,8 @@ export default class AppPresenter {
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   };
 
-  #resetSort = () => {
-    remove(this.#sortComponent);
-    this.#currentSortType = SortType.DEFAULT;
-    this.#createSort();
-  };
-
-  #resetFilters = () => {
-    this.#filterModel.setFilterType(UpdateType.MINOR, FilterType.EVERYTHING);
-    this.#filtersPresenter.removeFilters();
-    this.#filtersPresenter.init();
-  };
-
   #createNoEvents = () => {
-    this.#noEventsComponent = new NoEventsView(this.#filterModel.filterType);
+    this.#noEventsComponent = new NoEventsView(this.#filtersModel.filterType);
     render(this.#noEventsComponent, this.#mainBoard, RenderPosition.AFTERBEGIN);
   };
 
@@ -100,7 +85,6 @@ export default class AppPresenter {
   };
 
   #createFilters = () => {
-    this.#filtersPresenter = new FilterPresenter(this.#filtersContainer, this.#eventsModel, this.#filterModel);
     this.#filtersPresenter.init();
   };
 
@@ -154,19 +138,19 @@ export default class AppPresenter {
         break;
       case UpdateType.MINOR:
         this.#clearEventsList();
-        this.#resetSort();
         this.#renderEventsList();
         break;
       case UpdateType.MAJOR:
-        this.#resetFilters();
+        this.#currentSortType = SortType.DEFAULT;
+        this.#createFilters();
         this.#clearEventsList();
-        this.#resetSort();
         this.#renderEventsList();
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
-        this.#resetFilters();
+        this.#createFilters();
+        this.#renderEventsList();
     }
   };
 
@@ -195,7 +179,7 @@ export default class AppPresenter {
         try {
           await this.#eventsModel.deleteEvent(updateType, update);
         } catch (err) {
-          this.#eventsDict.get(update.id).setAbording();
+          this.#eventsDict.get(update.id).setAborting();
         }
         break;
     }
