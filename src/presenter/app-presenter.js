@@ -56,7 +56,6 @@ export default class AppPresenter {
   }
 
   init = () => {
-    this.#infoPresenter.init();
     this.#createFilters();
     this.#renderEventsList();
   };
@@ -137,14 +136,17 @@ export default class AppPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
+        this.#infoPresenter.init();
         this.#eventsDict.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
+        this.#infoPresenter.init();
         this.#clearEventsList();
         this.#renderEventsList();
         break;
       case UpdateType.MAJOR:
         this.#currentSortType = SortType.DEFAULT;
+        this.#infoPresenter.init();
         this.#createFilters();
         this.#clearEventsList();
         this.#renderEventsList();
@@ -152,6 +154,7 @@ export default class AppPresenter {
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
+        this.#infoPresenter.init();
         this.#createFilters();
         this.#renderEventsList();
     }

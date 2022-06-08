@@ -1,5 +1,6 @@
 import Observable from '../framework/observable.js';
 import { UpdateType } from '../utils/settings';
+import { dayCompare } from '../utils/sort';
 
 export default class EventsModel extends Observable {
   #eventsApiService = null;
@@ -23,7 +24,7 @@ export default class EventsModel extends Observable {
 
 
   get events() {
-    return this.#events;
+    return this.#events.sort(dayCompare);
   }
 
   updateEvent = async (updateType, update) => {
