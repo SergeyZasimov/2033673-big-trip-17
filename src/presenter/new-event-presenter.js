@@ -1,6 +1,5 @@
 import { remove, render, RenderPosition } from '../framework/render';
 import { DEFAULT_EVENT, UpdateType, UserAction } from '../utils/settings';
-import { nanoid } from 'nanoid';
 import EventEditView from '../view/event-edit-view';
 import OffersModel from '../model/offers-model';
 import DestinationsModel from '../model/destinations-model';
@@ -32,6 +31,24 @@ export default class NewEventPresenter {
 
   resetView = () => this.destroy();
 
+  setSaving = () => {
+    this.#eventEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true
+    });
+  };
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#eventEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+    this.#eventEditComponent.shake(resetFormState);
+  };
+
   #handleNewEventClick = () => {
     this.#eventEditComponent = new EventEditView(DEFAULT_EVENT, this.#allOffers, this.#allDestinations);
     this.#eventEditComponent.setFormSubmitHandler(this.#handleSubmitClick);
@@ -45,9 +62,8 @@ export default class NewEventPresenter {
     this.#changeData(
       UserAction.ADD_EVENT,
       UpdateType.MAJOR,
-      { id: nanoid(), ...event }
+      event
     );
-    this.destroy();
   };
 
   #handleResetClick = () => {

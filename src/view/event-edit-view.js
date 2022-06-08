@@ -6,12 +6,30 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
 const createEventEditTemplate = (state, allOffers, allDestinations) => {
-  const { type, destination, basePrice, dateFrom, dateTo, id, offers, isNewEvent } = state;
+  const {
+    type,
+    destination,
+    basePrice,
+    dateFrom,
+    dateTo,
+    id,
+    offers,
+    isNewEvent,
+    isDisabled,
+    isDeleting,
+    isSaving,
+  } = state;
 
   const typeOffers = (allOffers.find((item) => item.type === type)).offers;
 
-
   const capitalise = (word) => word.slice(0, 1).toUpperCase() + word.slice(1);
+
+  const computeDeleteButtonText = () => {
+    if (isNewEvent) {
+      return 'Cancel';
+    }
+    return isDeleting ? 'Deleting...' : 'Delete';
+  };
 
   return (
     `<li class="trip-events__item">
@@ -33,7 +51,8 @@ const createEventEditTemplate = (state, allOffers, allDestinations) => {
             <input id="event-type-${ eventType }-${ id }"
                    class="event__type-input  visually-hidden" type="radio" name="event-type"
                    value="${ eventType }"
-                   ${ eventType === type && 'checked' }>
+                   ${ eventType === type && 'checked' }
+                   ${ isDisabled && 'disabled' }>
             <label class="event__type-label  event__type-label--${ eventType }"
                    for="event-type-${ eventType }-${ id }">${ capitalise(eventType) }</label>
           </div>`)).join('') }
@@ -46,7 +65,15 @@ const createEventEditTemplate = (state, allOffers, allDestinations) => {
             <label class="event__label  event__type-output" for="event-destination-${ id }">
               ${ type }
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-${ id }" type="text" name="event-destination" value="${ destination ? destination.name : '' }" list="destination-list-${ id }" autocomplete="off">
+            <input
+              class="event__input  event__input--destination"
+              id="event-destination-${ id }"
+              type="text"
+              name="event-destination"
+              value="${ destination ? destination.name : '' }"
+              list="destination-list-${ id }"
+              autocomplete="off"
+              ${isDisabled && 'disabled'}>
             <datalist id="destination-list-${ id }">
             ${ allDestinations.map((item) => `<option value="${ item.name }"></option>`).join('') }
             </datalist>
@@ -54,10 +81,12 @@ const createEventEditTemplate = (state, allOffers, allDestinations) => {
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-${ id }">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-${ id }" type="text" name="event-start-time" value="${ getEditTime(dateFrom) }">
+            <input class="event__input  event__input--time" id="event-start-time-${ id }"
+                   type="text" name="event-start-time" value="${ getEditTime(dateFrom) }" ${isDisabled && 'disabled'}>
             &mdash;
             <label class="visually-hidden" for="event-end-time-${ id }">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-${ id }" type="text" name="event-end-time" value="${ getEditTime(dateTo) }">
+            <input class="event__input  event__input--time" id="event-end-time-${ id }"
+                   type="text" name="event-end-time" value="${ getEditTime(dateTo) }" ${isDisabled && 'disabled'}>
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -65,12 +94,13 @@ const createEventEditTemplate = (state, allOffers, allDestinations) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-${ id }" type="number" name="event-price" value="${ basePrice }">
+            <input class="event__input  event__input--price" id="event-price-${ id }"
+            type="number" name="event-price" value="${ basePrice }" autocomplete="off" ${isDisabled && 'disabled'}>
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">${ isNewEvent ? 'Cancel' : 'Delete' }</button>
-          <button class="event__rollup-btn" type="button">
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${ isDisabled && 'disabled' }>${ isSaving ? 'Saving...' : 'Save' }</button>
+          <button class="event__reset-btn" type="reset" ${ isDisabled && 'disabled' }>${ computeDeleteButtonText() }</button>
+          <button class="event__rollup-btn" type="button" ${isDisabled && 'disabled'}>
             <span class="visually-hidden">Open event</span>
           </button>
         </header>
@@ -88,7 +118,8 @@ const createEventEditTemplate = (state, allOffers, allDestinations) => {
                   type="checkbox"
                   name="event-offer-luggage"
                   data-offer_id = ${ item.id }
-                  ${ offers.includes(item.id) ? 'checked' : '' }>
+                  ${ offers.includes(item.id) ? 'checked' : '' }
+                  ${isDisabled && 'disabled'}>
                 <label class="event__offer-label" for="event-offer-luggage-${ item.id }">
                   <span class="event__offer-title">${ item.title }</span>
                   &plus;&euro;&nbsp;
@@ -139,12 +170,21 @@ export default class EventEditView extends AbstractStatefulView {
 
   static convertEventToState = (event) => {
     const isNewEvent = !(event.destination && event.basePrice);
-    return { ...event, isNewEvent };
+    return {
+      ...event,
+      isNewEvent,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
   };
 
   static convertStateToTask = (state) => {
     const event = { ...state };
     delete event.isNewEvent;
+    delete event.isDisabled;
+    delete event.isDeleting;
+    delete event.isSaving;
     return event;
   };
 
