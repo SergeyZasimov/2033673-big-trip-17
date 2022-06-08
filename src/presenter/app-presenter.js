@@ -68,9 +68,7 @@ export default class AppPresenter {
   };
 
   #createSort = () => {
-    if (this.#sortComponent !== null) {
-      remove(this.#sortComponent);
-    }
+    remove(this.#sortComponent);
     this.#sortComponent = new SortView(this.#currentSortType);
     render(this.#sortComponent, this.#mainBoard, RenderPosition.AFTERBEGIN);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
@@ -107,8 +105,10 @@ export default class AppPresenter {
     }
 
     if (!this.events.length) {
+      remove(this.#sortComponent);
       this.#createNoEvents();
     } else {
+      remove(this.#noEventsComponent);
       this.#createSort();
       render(this.#eventsListComponent, this.#mainBoard);
       this.events.forEach((event) => this.#createEvent(event));
