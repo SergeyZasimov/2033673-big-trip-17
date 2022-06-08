@@ -4,7 +4,9 @@ import OffersModel from '../model/offers-model';
 import { getHumanizeDay } from '../utils/date-time';
 import dayjs from 'dayjs';
 import { remove } from '../framework/render';
+import { getElements } from '../utils/get-elements';
 
+const { headerBoard } = getElements();
 
 export default class InfoPresenter {
   #events = null;
@@ -13,12 +15,11 @@ export default class InfoPresenter {
   #cost = null;
 
   #infoComponent = null;
-  #infoContainer = null;
+  #infoContainer = headerBoard;
   #eventModel = null;
   #allOffers = null;
 
-  constructor(infoContainer, eventsModel) {
-    this.#infoContainer = infoContainer;
+  constructor(eventsModel) {
     this.#eventModel = eventsModel;
   }
 

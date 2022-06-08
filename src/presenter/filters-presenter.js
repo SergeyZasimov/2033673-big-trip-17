@@ -2,15 +2,17 @@ import { filters } from '../utils/filter.js';
 import FiltersView from '../view/filters-view.js';
 import { remove, render } from '../framework/render.js';
 import { UpdateType } from '../utils/settings.js';
+import { getElements } from '../utils/get-elements';
+
+const { filterContainer } = getElements();
 
 export default class FiltersPresenter {
-  #filtersContainer = null;
+  #filtersContainer = filterContainer;
   #filtersComponent = null;
   #eventsModel = null;
   #filtersModel = null;
 
-  constructor(filterContainer, eventsModel, filtersModel) {
-    this.#filtersContainer = filterContainer;
+  constructor(eventsModel, filtersModel) {
     this.#eventsModel = eventsModel;
     this.#filtersModel = filtersModel;
   }
