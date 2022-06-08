@@ -60,13 +60,6 @@ export default class AppPresenter {
     this.#renderEventsList();
   };
 
-  createNewEvent = (handleNewEventFormClose) => {
-    this.#newEventPresenter = new NewEventPresenter(this.#eventsListComponent.element, this.#handleViewAction, handleNewEventFormClose);
-    this.#filtersModel.setFilterType(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#newEventPresenter.init();
-    this.#eventsDict.set('new_event', this.#newEventPresenter);
-  };
-
   #createSort = () => {
     remove(this.#sortComponent);
     this.#sortComponent = new SortView(this.#currentSortType);
@@ -93,6 +86,7 @@ export default class AppPresenter {
       this.#eventsListComponent.element,
       this.#handleViewAction,
       this.#handleModeChange,
+      this.#newEventPresenter.destroy,
     );
     eventPresenter.init(event);
     this.#eventsDict.set(event.id, eventPresenter);
@@ -155,6 +149,11 @@ export default class AppPresenter {
         this.#isLoading = false;
         remove(this.#loadingComponent);
         this.#infoPresenter.init();
+        this.#newEventPresenter = new NewEventPresenter(
+          this.#eventsListComponent.element,
+          this.#handleViewAction,
+          this.#filtersModel);
+        this.#newEventPresenter.init();
         this.#createFilters();
         this.#renderEventsList();
     }

@@ -1,35 +1,40 @@
 import { remove, render, RenderPosition } from '../framework/render';
-import { DEFAULT_EVENT, UpdateType, UserAction } from '../utils/settings';
+import { DEFAULT_EVENT, FilterType, UpdateType, UserAction } from '../utils/settings';
 import EventEditView from '../view/event-edit-view';
 import OffersModel from '../model/offers-model';
 import DestinationsModel from '../model/destinations-model';
+import { getElements } from '../utils/get-elements';
+import NewEventButtonView from '../view/new-event-button-view';
+
+const { headerBoard } = getElements();
 
 export default class NewEventPresenter {
+  #newEventButtonComponent = null;
+  #newEventButtonContainer = headerBoard;
   #eventListComponent = null;
   #eventEditComponent = null;
+  #filtersModel = null;
   #changeData = null;
   #allOffers = OffersModel.offers;
   #allDestinations = DestinationsModel.destinations;
-  #handleNewEventFormClose = null;
 
-  constructor(eventListComponent, changeData, handleNewEventFormClose) {
+  constructor(eventListComponent, changeData, filterModel) {
     this.#eventListComponent = eventListComponent;
     this.#changeData = changeData;
-    this.#handleNewEventFormClose = handleNewEventFormClose;
+    this.#filtersModel = filterModel;
   }
 
   init = () => {
-    this.#handleNewEventClick();
-    document.addEventListener('keydown', this.#onEscKeydownHandler);
+    this.#newEventButtonComponent = new NewEventButtonView();
+    this.#newEventButtonComponent.setNewEventClickHandler(this.#handleNewEventClick);
+    render(this.#newEventButtonComponent, this.#newEventButtonContainer);
   };
 
   destroy = () => {
     remove(this.#eventEditComponent);
     document.removeEventListener('click', this.#onEscKeydownHandler);
-    this.#handleNewEventFormClose();
+    this.#newEventButtonComponent.element.removeAttribute('disabled');
   };
-
-  resetView = () => this.destroy();
 
   setSaving = () => {
     this.#eventEditComponent.updateElement({
@@ -55,7 +60,9 @@ export default class NewEventPresenter {
     this.#eventEditComponent.setCloseFormHandler(this.#handleResetClick);
     this.#eventEditComponent.setResetHandler(this.#handleResetClick);
     render(this.#eventEditComponent, this.#eventListComponent, RenderPosition.AFTERBEGIN);
-
+    document.addEventListener('keydown', this.#onEscKeydownHandler);
+    this.#newEventButtonComponent.element.setAttribute('disabled', true);
+    this.#filtersModel.setFilterType(UpdateType.MAJOR, FilterType.EVERYTHING);
   };
 
   #handleSubmitClick = (event) => {
@@ -64,6 +71,7 @@ export default class NewEventPresenter {
       UpdateType.MAJOR,
       event
     );
+    this.destroy();
   };
 
   #handleResetClick = () => {

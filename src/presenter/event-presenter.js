@@ -9,6 +9,7 @@ export default class EventPresenter {
   #eventComponent = null;
   #eventEditComponent = null;
   #eventsListContainer = null;
+  #removeNewEventForm = null;
 
   #event = null;
   #mode = Mode.DEFAULT;
@@ -17,10 +18,11 @@ export default class EventPresenter {
   #changeData = null;
   #changeMode = null;
 
-  constructor(eventsListContainer, changeData, changeMode) {
+  constructor(eventsListContainer, changeData, changeMode, removeNewEventForm) {
     this.#eventsListContainer = eventsListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
+    this.#removeNewEventForm = removeNewEventForm;
   }
 
   init = (event) => {
@@ -115,11 +117,10 @@ export default class EventPresenter {
 
   #handleEditClick = () => {
     this.#replaceEventToEdit();
+    this.#removeNewEventForm();
   };
 
   #handleFormSubmit = (event) => {
-    // this.#replaceEditToEvent();
-    // this.#mode = Mode.DEFAULT;
     document.removeEventListener('keydown', this.#onEscKeyDown);
     this.#changeData(
       UserAction.UPDATE_EVENT,
