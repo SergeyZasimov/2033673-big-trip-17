@@ -153,7 +153,7 @@ export default class EventPresenter {
   #handleDeleteClick = (event) => {
     this.#changeData(
       UserAction.DELETE_EVENT,
-      UpdateType.MINOR,
+      UpdateType.MAJOR,
       event
     );
   };
