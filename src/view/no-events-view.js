@@ -1,5 +1,5 @@
-import AbstractView from '../framework/view/abstract-view.js';
-import { FilterType } from '../utils/settings.js';
+import AbstractView from '../framework/view/abstract-view';
+import { FilterType } from '../utils/settings';
 
 const NoEventTextValue = {
   [FilterType.EVERYTHING]: 'Click New Event to create your first point',

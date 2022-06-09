@@ -1,9 +1,9 @@
-import { remove, render, replace } from '../framework/render.js';
-import EventView from '../view/event-view.js';
-import EventEditView from '../view/event-edit-view.js';
-import { Mode, UpdateType, UserAction } from '../utils/settings.js';
-import OffersModel from '../model/offers-model';
-import DestinationsModel from '../model/destinations-model';
+import { remove, render, replace } from '../framework/render';
+import EventView from '../view/event-view';
+import EventEditView from '../view/event-edit-view';
+import { Mode, UpdateType, UserAction } from '../utils/settings';
+import OfferModel from '../model/offer-model';
+import DestinationModel from '../model/destination-model';
 
 export default class EventPresenter {
   #eventComponent = null;
@@ -13,8 +13,8 @@ export default class EventPresenter {
 
   #event = null;
   #mode = Mode.DEFAULT;
-  #allOffers = OffersModel.offers;
-  #allDestinations = DestinationsModel.destinations;
+  #allOffers = OfferModel.offers;
+  #allDestinations = DestinationModel.destinations;
   #changeData = null;
   #changeMode = null;
 

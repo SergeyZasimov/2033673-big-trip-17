@@ -1,5 +1,4 @@
 import EventsListView from '../view/events-list-view';
-import SortView from '../view/sort-view';
 import NoEventsView from '../view/no-events-view';
 import { RenderPosition, render, remove } from '../framework/render';
 import EventPresenter from './event-presenter';

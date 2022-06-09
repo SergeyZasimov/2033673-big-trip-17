@@ -1,9 +1,8 @@
-import { render, RenderPosition } from '../render';
 import InfoView from '../view/info-view';
-import OffersModel from '../model/offers-model';
+import OfferModel from '../model/offer-model';
 import { getHumanizeDay } from '../utils/date-time';
 import dayjs from 'dayjs';
-import { remove } from '../framework/render';
+import { remove, render, RenderPosition } from '../framework/render';
 import { getElements } from '../utils/get-elements';
 
 const { headerBoard } = getElements();
@@ -24,11 +23,8 @@ export default class InfoPresenter {
   }
 
   init = () => {
-    if (this.#infoComponent !== null) {
-      remove(this.#infoComponent);
-    }
-
-    this.#allOffers = OffersModel.offers;
+    remove(this.#infoComponent);
+    this.#allOffers = OfferModel.offers;
     this.#events = this.#eventModel.events;
     this.#title = this.#getTitle(this.#events);
     this.#cost = this.#getCost(this.#events);

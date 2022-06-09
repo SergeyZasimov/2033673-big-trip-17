@@ -1,5 +1,5 @@
-import { getDuration, getHumanizeDay, getHumanizeTime, getMarkupDate, getMarkupTime } from '../utils/date-time.js';
-import AbstractView from '../framework/view/abstract-view.js';
+import { getDuration, getHumanizeDay, getHumanizeTime, getMarkupDate, getMarkupTime } from '../utils/date-time';
+import AbstractView from '../framework/view/abstract-view';
 
 const createEventTemplate = (event, allOffers) => {
   const { type, destination, basePrice, isFavorite, dateFrom, dateTo } = event;

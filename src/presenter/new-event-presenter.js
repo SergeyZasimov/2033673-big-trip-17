@@ -1,8 +1,8 @@
 import { remove, render, RenderPosition } from '../framework/render';
 import { DEFAULT_EVENT, FilterType, UpdateType, UserAction } from '../utils/settings';
 import EventEditView from '../view/event-edit-view';
-import OffersModel from '../model/offers-model';
-import DestinationsModel from '../model/destinations-model';
+import OfferModel from '../model/offer-model';
+import DestinationModel from '../model/destination-model';
 import { getElements } from '../utils/get-elements';
 import NewEventButtonView from '../view/new-event-button-view';
 
@@ -15,8 +15,8 @@ export default class NewEventPresenter {
   #eventEditComponent = null;
   #filtersModel = null;
   #changeData = null;
-  #allOffers = OffersModel.offers;
-  #allDestinations = DestinationsModel.destinations;
+  #allOffers = OfferModel.offers;
+  #allDestinations = DestinationModel.destinations;
 
   constructor(eventListComponent, changeData, filterModel) {
     this.#eventListComponent = eventListComponent;

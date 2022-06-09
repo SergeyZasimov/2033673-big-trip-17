@@ -6,7 +6,7 @@ import { getElements } from '../utils/get-elements';
 
 const { filterContainer } = getElements();
 
-export default class FiltersPresenter {
+export default class FilterPresenter {
   #filtersContainer = filterContainer;
   #filtersComponent = null;
   #eventsModel = null;

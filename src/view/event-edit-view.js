@@ -1,12 +1,11 @@
-import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { getEditTime } from '../utils/date-time.js';
-import { EVENT_TYPES } from '../utils/settings.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view';
+import { getEditTime } from '../utils/date-time';
+import { EVENT_TYPES } from '../utils/settings';
 import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
 const createEventEditTemplate = (state, allOffers, allDestinations) => {
-  console.log(state);
   const {
     type,
     destination,
@@ -74,7 +73,7 @@ const createEventEditTemplate = (state, allOffers, allDestinations) => {
               value="${ destination ? destination.name : '' }"
               list="destination-list-${ id }"
               autocomplete="off"
-              ${isDisabled && 'disabled'}>
+              ${ isDisabled && 'disabled' }>
             <datalist id="destination-list-${ id }">
             ${ allDestinations.map((item) => `<option value="${ item.name }"></option>`).join('') }
             </datalist>
@@ -83,11 +82,11 @@ const createEventEditTemplate = (state, allOffers, allDestinations) => {
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-${ id }">From</label>
             <input class="event__input  event__input--time" id="event-start-time-${ id }"
-                   type="text" name="event-start-time" value="${ getEditTime(dateFrom) }" ${isDisabled && 'disabled'}>
+                   type="text" name="event-start-time" value="${ getEditTime(dateFrom) }" ${ isDisabled && 'disabled' }>
             &mdash;
             <label class="visually-hidden" for="event-end-time-${ id }">To</label>
             <input class="event__input  event__input--time" id="event-end-time-${ id }"
-                   type="text" name="event-end-time" value="${ getEditTime(dateTo) }" ${isDisabled && 'disabled'}>
+                   type="text" name="event-end-time" value="${ getEditTime(dateTo) }" ${ isDisabled && 'disabled' }>
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -96,12 +95,12 @@ const createEventEditTemplate = (state, allOffers, allDestinations) => {
               &euro;
             </label>
             <input class="event__input  event__input--price" id="event-price-${ id }"
-            type="number" name="event-price" value="${ basePrice }" autocomplete="off" ${isDisabled && 'disabled'}>
+            type="number" name="event-price" value="${ basePrice }" autocomplete="off" ${ isDisabled && 'disabled' }>
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit" ${ isDisabled && 'disabled' }>${ isSaving ? 'Saving...' : 'Save' }</button>
           <button class="event__reset-btn" type="reset" ${ isDisabled && 'disabled' }>${ computeDeleteButtonText() }</button>
-          <button class="event__rollup-btn" type="button" ${isDisabled && 'disabled'}>
+          <button class="event__rollup-btn" type="button" ${ isDisabled && 'disabled' }>
             <span class="visually-hidden">Open event</span>
           </button>
         </header>
@@ -120,7 +119,7 @@ const createEventEditTemplate = (state, allOffers, allDestinations) => {
                   name="event-offer-luggage"
                   data-offer_id = ${ item.id }
                   ${ offers.includes(item.id) ? 'checked' : '' }
-                  ${isDisabled && 'disabled'}>
+                  ${ isDisabled && 'disabled' }>
                 <label class="event__offer-label" for="event-offer-luggage-${ item.id }">
                   <span class="event__offer-title">${ item.title }</span>
                   &plus;&euro;&nbsp;
@@ -174,7 +173,8 @@ export default class EventEditView extends AbstractStatefulView {
     return {
       ...event,
       isNewEvent,
-      offers: isNewEvent ? []: event.offers,
+      id: isNewEvent ? '' : event.id,
+      offers: isNewEvent ? [] : event.offers,
       isDisabled: false,
       isSaving: false,
       isDeleting: false,
@@ -292,6 +292,7 @@ export default class EventEditView extends AbstractStatefulView {
         enableTime: true,
         ['time_24hr']: true,
         onChange: this.#changeTimeHandler,
+        minuteIncrement: 1,
       }
     );
   };
