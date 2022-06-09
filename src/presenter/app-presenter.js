@@ -17,26 +17,29 @@ export default class AppPresenter {
   #mainBoard = mainBoard;
   #eventsModel = null;
   #filtersModel = null;
-  #sortComponent = null;
+  #sortModel = null;
   #noEventsComponent = null;
   #eventsListComponent = new EventsListView();
   #eventsDict = new Map();
-  #currentSortType = SortType.DEFAULT;
   #newEventPresenter = null;
   #filtersPresenter = null;
   #infoPresenter = null;
+  #sortPresenter = null;
   #isLoading = true;
   #loadingComponent = null;
   #uiBlocker = new UiBlocker(BlockerTimeLimit.LOWER_LIMIT, BlockerTimeLimit.UPPER_LIMIT);
 
-  constructor(filtersPresenter, infoPresenter, eventsModel, filterModel) {
+  constructor(filtersPresenter, infoPresenter, sortPresenter, eventsModel, filterModel, sortModel) {
     this.#filtersPresenter = filtersPresenter;
     this.#infoPresenter = infoPresenter;
+    this.#sortPresenter = sortPresenter;
     this.#eventsModel = eventsModel;
     this.#filtersModel = filterModel;
+    this.#sortModel = sortModel;
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
     this.#filtersModel.addObserver(this.#handleModelEvent);
+    this.#sortModel.addObserver(this.#handleModelEvent);
   }
 
   get events() {
@@ -44,7 +47,7 @@ export default class AppPresenter {
     const events = this.#eventsModel.events;
     const filteredEvents = filters[filterType](events);
 
-    switch (this.#currentSortType) {
+    switch (this.#sortModel.sortType) {
       case SortType.TIME:
         return filteredEvents.sort(timeCompare);
       case SortType.PRICE:
@@ -55,13 +58,6 @@ export default class AppPresenter {
 
   init = () => {
     this.#renderEventsList();
-  };
-
-  #createSort = () => {
-    remove(this.#sortComponent);
-    this.#sortComponent = new SortView(this.#currentSortType);
-    render(this.#sortComponent, this.#mainBoard, RenderPosition.AFTERBEGIN);
-    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   };
 
   #createNoEvents = () => {
@@ -92,11 +88,11 @@ export default class AppPresenter {
     }
 
     if (!this.events.length) {
-      remove(this.#sortComponent);
+      remove(this.#sortPresenter.removeSortComponent);
       this.#createNoEvents();
     } else {
       remove(this.#noEventsComponent);
-      this.#createSort();
+      this.#sortPresenter.init();
       render(this.#eventsListComponent, this.#mainBoard);
       this.events.forEach((event) => this.#createEvent(event));
     }
@@ -111,15 +107,6 @@ export default class AppPresenter {
     this.#eventsDict.forEach((presenter) => presenter.resetView());
   };
 
-  #handleSortTypeChange = (sortType) => {
-    if (this.#currentSortType === sortType) {
-      return;
-    }
-    this.#currentSortType = sortType;
-    this.#clearEventsList();
-    this.#renderEventsList();
-  };
-
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
@@ -127,26 +114,30 @@ export default class AppPresenter {
         this.#eventsDict.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
-        this.#infoPresenter.init();
         this.#clearEventsList();
         this.#renderEventsList();
         break;
+      case UpdateType.FILTER_MINOR:
+        this.#filtersPresenter.init();
+        this.#sortModel.setSortType(UpdateType.MINOR, SortType.DEFAULT);
+        break;
       case UpdateType.MAJOR:
-        this.#currentSortType = SortType.DEFAULT;
         this.#infoPresenter.init();
         this.#filtersPresenter.init();
-        this.#clearEventsList();
-        this.#renderEventsList();
+        this.#sortModel.setSortType(UpdateType.MINOR, SortType.DEFAULT);
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
+
         this.#infoPresenter.init();
+
         this.#newEventPresenter = new NewEventPresenter(
           this.#eventsListComponent.element,
           this.#handleViewAction,
           this.#filtersModel);
         this.#newEventPresenter.init();
+
         this.#filtersPresenter.init();
         this.#renderEventsList();
     }

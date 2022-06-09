@@ -1,7 +1,7 @@
-import { filters } from '../utils/filter.js';
-import FiltersView from '../view/filters-view.js';
-import { remove, render } from '../framework/render.js';
-import { UpdateType } from '../utils/settings.js';
+import { filters } from '../utils/filter';
+import FiltersView from '../view/filters-view';
+import { remove, render } from '../framework/render';
+import { UpdateType } from '../utils/settings';
 import { getElements } from '../utils/get-elements';
 
 const { filterContainer } = getElements();
@@ -38,6 +38,6 @@ export default class FiltersPresenter {
     if (this.#filtersModel.filterType === filterType) {
       return;
     }
-    this.#filtersModel.setFilterType(UpdateType.MAJOR, filterType);
+    this.#filtersModel.setFilterType(UpdateType.FILTER_MINOR, filterType);
   };
 }

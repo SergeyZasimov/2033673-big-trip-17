@@ -62,7 +62,7 @@ export default class NewEventPresenter {
     render(this.#eventEditComponent, this.#eventListComponent, RenderPosition.AFTERBEGIN);
     document.addEventListener('keydown', this.#onEscKeydownHandler);
     this.#newEventButtonComponent.element.setAttribute('disabled', true);
-    this.#filtersModel.setFilterType(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#filtersModel.setFilterType(UpdateType.FILTER_MINOR, FilterType.EVERYTHING);
   };
 
   #handleSubmitClick = (event) => {
