@@ -6,6 +6,7 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
 const createEventEditTemplate = (state, allOffers, allDestinations) => {
+  console.log(state);
   const {
     type,
     destination,
@@ -173,6 +174,7 @@ export default class EventEditView extends AbstractStatefulView {
     return {
       ...event,
       isNewEvent,
+      offers: isNewEvent ? []: event.offers,
       isDisabled: false,
       isSaving: false,
       isDeleting: false,

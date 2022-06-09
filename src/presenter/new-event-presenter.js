@@ -56,12 +56,17 @@ export default class NewEventPresenter {
 
   #handleNewEventClick = () => {
     this.#eventEditComponent = new EventEditView(DEFAULT_EVENT, this.#allOffers, this.#allDestinations);
+
     this.#eventEditComponent.setFormSubmitHandler(this.#handleSubmitClick);
     this.#eventEditComponent.setCloseFormHandler(this.#handleResetClick);
     this.#eventEditComponent.setResetHandler(this.#handleResetClick);
+
     render(this.#eventEditComponent, this.#eventListComponent, RenderPosition.AFTERBEGIN);
+
     document.addEventListener('keydown', this.#onEscKeydownHandler);
+
     this.#newEventButtonComponent.element.setAttribute('disabled', true);
+
     this.#filtersModel.setFilterType(UpdateType.FILTER_MINOR, FilterType.EVERYTHING);
   };
 
