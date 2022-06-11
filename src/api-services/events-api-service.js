@@ -42,8 +42,8 @@ export default class EventsApiService extends ApiService {
     const adaptedEvent = {
       ...event,
       ['base_price']: +event.basePrice,
-      ['date_to']: dayjs(event.dateTo).toISOString(),
-      ['date_from']: dayjs(event.dateFrom).toISOString(),
+      ['date_to']: event.dateTo,
+      ['date_from']: event.dateFrom,
       ['is_favorite']: event.isFavorite
     };
 
