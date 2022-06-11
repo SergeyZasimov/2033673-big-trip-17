@@ -1,7 +1,7 @@
-import Observable from '../framework/observable.js';
-import { FilterType } from '../utils/settings.js';
+import Observable from '../framework/observable';
+import { FilterType } from '../utils/settings';
 
-export default class FiltersModel extends Observable {
+export default class FilterModel extends Observable {
   #filterType = FilterType.EVERYTHING;
 
   get filterType() {

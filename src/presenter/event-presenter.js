@@ -1,26 +1,28 @@
-import { remove, render, replace } from '../framework/render.js';
-import EventView from '../view/event-view.js';
-import EventEditView from '../view/event-edit-view.js';
-import { Mode, UpdateType, UserAction } from '../utils/settings.js';
-import OffersModel from '../model/offers-model';
-import DestinationsModel from '../model/destinations-model';
+import { remove, render, replace } from '../framework/render';
+import EventView from '../view/event-view';
+import EventEditView from '../view/event-edit-view';
+import { Mode, UpdateType, UserAction } from '../utils/settings';
+import OfferModel from '../model/offer-model';
+import DestinationModel from '../model/destination-model';
 
 export default class EventPresenter {
   #eventComponent = null;
   #eventEditComponent = null;
   #eventsListContainer = null;
+  #removeNewEventForm = null;
 
   #event = null;
   #mode = Mode.DEFAULT;
-  #allOffers = OffersModel.offers;
-  #allDestinations = DestinationsModel.destinations;
+  #allOffers = OfferModel.offers;
+  #allDestinations = DestinationModel.destinations;
   #changeData = null;
   #changeMode = null;
 
-  constructor(eventsListContainer, changeData, changeMode) {
+  constructor(eventsListContainer, changeData, changeMode, removeNewEventForm) {
     this.#eventsListContainer = eventsListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
+    this.#removeNewEventForm = removeNewEventForm;
   }
 
   init = (event) => {
@@ -115,11 +117,10 @@ export default class EventPresenter {
 
   #handleEditClick = () => {
     this.#replaceEventToEdit();
+    this.#removeNewEventForm();
   };
 
   #handleFormSubmit = (event) => {
-    // this.#replaceEditToEvent();
-    // this.#mode = Mode.DEFAULT;
     document.removeEventListener('keydown', this.#onEscKeyDown);
     this.#changeData(
       UserAction.UPDATE_EVENT,
@@ -152,7 +153,7 @@ export default class EventPresenter {
   #handleDeleteClick = (event) => {
     this.#changeData(
       UserAction.DELETE_EVENT,
-      UpdateType.MINOR,
+      UpdateType.MAJOR,
       event
     );
   };

@@ -1,52 +1,33 @@
-import { render, RenderPosition } from './render.js';
-import InfoView from './view/info-view.js';
-import AppPresenter from './presenter/app-presenter.js';
-import EventsModel from './model/events-model.js';
-import FiltersModel from './model/filters-model';
+import AppPresenter from './presenter/app-presenter';
+import EventModel from './model/event-model';
+import FilterModel from './model/filter-model';
 import EventsApiService from './api-services/events-api-service';
-import DestinationsModel from './model/destinations-model';
+import DestinationModel from './model/destination-model';
 import { AUTHORIZATION, END_POINT } from './utils/settings';
-import OffersModel from './model/offers-model';
-import NewEventButtonView from './view/new-event-button-view';
-import FiltersPresenter from './presenter/filters-presenter';
+import OfferModel from './model/offer-model';
+import FilterPresenter from './presenter/filter-presenter';
+import InfoPresenter from './presenter/info-presenter';
+import SortModel from './model/sort-model';
+import SortPresenter from './presenter/sort-presenter';
 
-const headerInfo = document.querySelector('.trip-main');
-const headerControlsFilters = document.querySelector('.trip-controls__filters');
+const eventsModel = new EventModel(new EventsApiService(END_POINT, AUTHORIZATION));
+const filterModel = new FilterModel();
+const sortModel = new SortModel();
 
-const mainEventsBoard = document.querySelector('.page-main').querySelector('.trip-events');
-
-
-render(new InfoView(), headerInfo, RenderPosition.AFTERBEGIN);
-const newEventButtonComponent = new NewEventButtonView();
-
-const eventsModel = new EventsModel(new EventsApiService(END_POINT, AUTHORIZATION));
-const filterModel = new FiltersModel();
-
-const filtersPresenter = new FiltersPresenter(headerControlsFilters, eventsModel, filterModel);
+const filtersPresenter = new FilterPresenter(eventsModel, filterModel);
+const infoPresenter = new InfoPresenter(eventsModel);
+const sortPresenter = new SortPresenter(sortModel);
 
 const appPresenter = new AppPresenter(
-  mainEventsBoard,
-  headerInfo,
   filtersPresenter,
+  infoPresenter,
+  sortPresenter,
   eventsModel,
   filterModel,
+  sortModel,
 );
 
-const handleNewButtonFormClose = () => {
-  newEventButtonComponent.element.removeAttribute('disabled');
-};
-
-const handleNewEventButtonClick = () => {
-  appPresenter.createNewEvent(handleNewButtonFormClose);
-  newEventButtonComponent.element.setAttribute('disabled', true);
-};
-
-
-OffersModel.init()
-  .then(() => DestinationsModel.init())
-  .then(() => eventsModel.init())
-  .finally(() => {
-    render(newEventButtonComponent, headerInfo);
-    newEventButtonComponent.setNewEventClickHandler(handleNewEventButtonClick);
-  });
+OfferModel.init()
+  .then(() => DestinationModel.init())
+  .then(() => eventsModel.init());
 appPresenter.init();

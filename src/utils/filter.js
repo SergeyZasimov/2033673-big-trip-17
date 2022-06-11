@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { FilterType } from './settings.js';
+import { FilterType } from './settings';
 
 
 const filters = {

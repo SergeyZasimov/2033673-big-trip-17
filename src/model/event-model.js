@@ -1,7 +1,8 @@
-import Observable from '../framework/observable.js';
+import Observable from '../framework/observable';
 import { UpdateType } from '../utils/settings';
+import { dayCompare } from '../utils/sort';
 
-export default class EventsModel extends Observable {
+export default class EventModel extends Observable {
   #eventsApiService = null;
   #events = [];
 
@@ -23,7 +24,7 @@ export default class EventsModel extends Observable {
 
 
   get events() {
-    return this.#events;
+    return this.#events.sort(dayCompare);
   }
 
   updateEvent = async (updateType, update) => {
@@ -75,8 +76,6 @@ export default class EventsModel extends Observable {
     } catch (err) {
       throw new Error('Can\'t delete event');
     }
-
-
   };
 
   #adaptToClient = (event) => {

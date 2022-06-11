@@ -1,42 +1,44 @@
-import EventsListView from '../view/events-list-view.js';
-import SortView from '../view/sort-view.js';
-import NoEventsView from '../view/no-events-view.js';
-import { RenderPosition, render, remove } from '../framework/render.js';
-import EventPresenter from './event-presenter.js';
-import { timeCompare, priceCompare, dayCompare } from '../utils/sort.js';
-import { BlockerTimeLimit, FilterType, SortType, UpdateType, UserAction } from '../utils/settings.js';
-import { filters } from '../utils/filter.js';
+import EventsListView from '../view/events-list-view';
+import NoEventsView from '../view/no-events-view';
+import { RenderPosition, render, remove } from '../framework/render';
+import EventPresenter from './event-presenter';
+import { timeCompare, priceCompare, dayCompare } from '../utils/sort';
+import { BlockerTimeLimit, SortType, UpdateType, UserAction } from '../utils/settings';
+import { filters } from '../utils/filter';
 import NewEventPresenter from './new-event-presenter';
 import LoadingView from '../view/loading-view';
 import UiBlocker from '../framework/ui-blocker/ui-blocker';
+import { getElements } from '../utils/get-elements';
 
+const { mainBoard } = getElements();
 
 export default class AppPresenter {
-  #mainBoard = null;
-  #infoContainer = null;
+  #mainBoard = mainBoard;
   #eventsModel = null;
   #filtersModel = null;
-  #sortComponent = null;
+  #sortModel = null;
   #noEventsComponent = null;
-  #eventsListComponent = null;
+  #eventsListComponent = new EventsListView();
   #eventsDict = new Map();
-  #currentSortType = SortType.DEFAULT;
   #newEventPresenter = null;
   #filtersPresenter = null;
+  #infoPresenter = null;
+  #sortPresenter = null;
   #isLoading = true;
   #loadingComponent = null;
   #uiBlocker = new UiBlocker(BlockerTimeLimit.LOWER_LIMIT, BlockerTimeLimit.UPPER_LIMIT);
 
-  constructor(eventsContainer, infoContainer, filtersPresenter, eventsModel, filterModel) {
-    this.#mainBoard = eventsContainer;
-    this.#infoContainer = infoContainer;
+  constructor(filtersPresenter, infoPresenter, sortPresenter, eventsModel, filterModel, sortModel) {
     this.#filtersPresenter = filtersPresenter;
+    this.#infoPresenter = infoPresenter;
+    this.#sortPresenter = sortPresenter;
     this.#eventsModel = eventsModel;
     this.#filtersModel = filterModel;
+    this.#sortModel = sortModel;
 
-    this.#eventsListComponent = new EventsListView();
     this.#eventsModel.addObserver(this.#handleModelEvent);
     this.#filtersModel.addObserver(this.#handleModelEvent);
+    this.#sortModel.addObserver(this.#handleModelEvent);
   }
 
   get events() {
@@ -44,7 +46,7 @@ export default class AppPresenter {
     const events = this.#eventsModel.events;
     const filteredEvents = filters[filterType](events);
 
-    switch (this.#currentSortType) {
+    switch (this.#sortModel.sortType) {
       case SortType.TIME:
         return filteredEvents.sort(timeCompare);
       case SortType.PRICE:
@@ -54,24 +56,7 @@ export default class AppPresenter {
   }
 
   init = () => {
-    this.#createFilters();
     this.#renderEventsList();
-  };
-
-  createNewEvent = (handleNewEventFormClose) => {
-    this.#newEventPresenter = new NewEventPresenter(this.#eventsListComponent.element, this.#handleViewAction, handleNewEventFormClose);
-    this.#filtersModel.setFilterType(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#newEventPresenter.init();
-    this.#eventsDict.set('new_event', this.#newEventPresenter);
-  };
-
-  #createSort = () => {
-    if (this.#sortComponent !== null) {
-      remove(this.#sortComponent);
-    }
-    this.#sortComponent = new SortView(this.#currentSortType);
-    render(this.#sortComponent, this.#mainBoard, RenderPosition.AFTERBEGIN);
-    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   };
 
   #createNoEvents = () => {
@@ -84,15 +69,12 @@ export default class AppPresenter {
     render(this.#loadingComponent, this.#mainBoard, RenderPosition.AFTERBEGIN);
   };
 
-  #createFilters = () => {
-    this.#filtersPresenter.init();
-  };
-
   #createEvent = (event) => {
     const eventPresenter = new EventPresenter(
       this.#eventsListComponent.element,
       this.#handleViewAction,
       this.#handleModeChange,
+      this.#newEventPresenter.destroy,
     );
     eventPresenter.init(event);
     this.#eventsDict.set(event.id, eventPresenter);
@@ -105,9 +87,11 @@ export default class AppPresenter {
     }
 
     if (!this.events.length) {
+      remove(this.#sortPresenter.removeSortComponent);
       this.#createNoEvents();
     } else {
-      this.#createSort();
+      remove(this.#noEventsComponent);
+      this.#sortPresenter.init();
       render(this.#eventsListComponent, this.#mainBoard);
       this.events.forEach((event) => this.#createEvent(event));
     }
@@ -122,34 +106,38 @@ export default class AppPresenter {
     this.#eventsDict.forEach((presenter) => presenter.resetView());
   };
 
-  #handleSortTypeChange = (sortType) => {
-    if (this.#currentSortType === sortType) {
-      return;
-    }
-    this.#currentSortType = sortType;
-    this.#clearEventsList();
-    this.#renderEventsList();
-  };
-
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
+        this.#infoPresenter.init();
         this.#eventsDict.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
         this.#clearEventsList();
         this.#renderEventsList();
         break;
+      case UpdateType.FILTER_MINOR:
+        this.#filtersPresenter.init();
+        this.#sortModel.setSortType(UpdateType.MINOR, SortType.DEFAULT);
+        break;
       case UpdateType.MAJOR:
-        this.#currentSortType = SortType.DEFAULT;
-        this.#createFilters();
-        this.#clearEventsList();
-        this.#renderEventsList();
+        this.#infoPresenter.init();
+        this.#filtersPresenter.init();
+        this.#sortModel.setSortType(UpdateType.MINOR, SortType.DEFAULT);
         break;
       case UpdateType.INIT:
         this.#isLoading = false;
         remove(this.#loadingComponent);
-        this.#createFilters();
+
+        this.#infoPresenter.init();
+
+        this.#newEventPresenter = new NewEventPresenter(
+          this.#eventsListComponent.element,
+          this.#handleViewAction,
+          this.#filtersModel);
+        this.#newEventPresenter.init();
+
+        this.#filtersPresenter.init();
         this.#renderEventsList();
     }
   };
@@ -185,5 +173,4 @@ export default class AppPresenter {
     }
     this.#uiBlocker.unblock();
   };
-
 }
