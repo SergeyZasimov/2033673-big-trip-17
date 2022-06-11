@@ -111,6 +111,8 @@ export default class AppPresenter {
       case UpdateType.PATCH:
         this.#infoPresenter.init();
         this.#eventsDict.get(data.id).init(data);
+        this.#clearEventsList();
+        this.#renderEventsList();
         break;
       case UpdateType.MINOR:
         this.#clearEventsList();
