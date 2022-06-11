@@ -4,6 +4,7 @@ import { EVENT_TYPES } from '../utils/settings';
 import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
+import dayjs from 'dayjs';
 
 const createEventEditTemplate = (state, allOffers, allDestinations) => {
   const {
@@ -151,7 +152,8 @@ ${ destination ? `<section class="event__section  event__section--destination">
 };
 
 export default class EventEditView extends AbstractStatefulView {
-  #datepicker = null;
+  #dateFromPicker = null;
+  #dateToPicker = null;
   #allOffers = null;
   #allDestinations = null;
 
@@ -276,22 +278,52 @@ export default class EventEditView extends AbstractStatefulView {
     }
   };
 
-  #changeTimeHandler = ([dateFrom, dateTo]) => {
-    this.updateElement(
-      { dateFrom, dateTo }
-    );
+  #dateValidate = (dateA, dateB, callback) => {
+    const compare = dayjs(dateB).diff(dayjs(dateA));
+    if (compare > 0) {
+      callback();
+    } else {
+      this.shake();
+    }
+  };
+
+  #changeDateFromHandler = (dateFrom) => {
+    this.#dateValidate(dateFrom, this._state.dateTo, () => {
+      this.updateElement(
+        { dateFrom: dayjs(dateFrom).toISOString() }
+      );
+    });
+  };
+
+  #changeDateToHandler = (dateTo) => {
+    this.#dateValidate(this._state.dateFrom, dateTo, () => {
+      this.updateElement(
+        { dateTo: dayjs(dateTo).toISOString() }
+      );
+    });
   };
 
   #setDatePicker = () => {
-    this.#datepicker = flatpickr(
-      this.element.querySelector('.event__field-group--time'),
+    this.#dateFromPicker = flatpickr(
+      this.element.querySelector('input[name="event-start-time"]'),
       {
-        mode: 'range',
-        defaultDate: [this._state.dateFrom, this._state.dateTo],
-        dateFormat: 'd/m/y H:S',
+        defaultDate: [this._state.dateFrom],
+        dateFormat: 'd/m/y H:i',
         enableTime: true,
         ['time_24hr']: true,
-        onChange: this.#changeTimeHandler,
+        onChange: this.#changeDateFromHandler,
+        minuteIncrement: 1,
+      }
+    );
+
+    this.#dateToPicker = flatpickr(
+      this.element.querySelector('input[name="event-end-time"]'),
+      {
+        defaultDate: [this._state.dateTo],
+        dateFormat: 'd/m/y H:i',
+        enableTime: true,
+        ['time_24hr']: true,
+        onChange: this.#changeDateToHandler,
         minuteIncrement: 1,
       }
     );
