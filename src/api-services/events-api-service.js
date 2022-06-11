@@ -1,6 +1,5 @@
 import ApiService from '../framework/api-service';
 import { HTTPMethods } from '../utils/settings';
-import dayjs from 'dayjs';
 
 
 export default class EventsApiService extends ApiService {
