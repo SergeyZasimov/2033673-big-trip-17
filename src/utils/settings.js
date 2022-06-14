@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import { getEditTime } from './date-time';
 
 const EVENT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
@@ -11,8 +10,8 @@ const DEFAULT_EVENT = {
   type: 'taxi',
   destination: null,
   basePrice: '',
-  dateFrom: getEditTime(dayjs()),
-  dateTo: getEditTime(dayjs()),
+  dateFrom: dayjs().toISOString(),
+  dateTo: dayjs().toISOString(),
   offers: [],
   isFavorite: false
 };
