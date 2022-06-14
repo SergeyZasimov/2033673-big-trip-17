@@ -1,5 +1,5 @@
 import ApiService from '../framework/api-service';
-import { HTTPMethods } from '../utils/settings';
+import { HTTPMethod } from '../utils/settings';
 
 
 export default class EventsApiService extends ApiService {
@@ -12,7 +12,7 @@ export default class EventsApiService extends ApiService {
   updateEvent = async (event) => {
     const response = await this._load({
       url: `points/${ event.id }`,
-      method: HTTPMethods.PUT,
+      method: HTTPMethod.PUT,
       body: JSON.stringify(this.#adaptToServer(event)),
       headers: new Headers({ 'Content-Type': 'application/json' })
     });
@@ -23,7 +23,7 @@ export default class EventsApiService extends ApiService {
   addEvent = async (event) => {
     const response = await this._load({
       url: 'points',
-      method: HTTPMethods.POST,
+      method: HTTPMethod.POST,
       body: JSON.stringify(this.#adaptToServer(event)),
       headers: new Headers({ 'Content-Type': 'application/json' })
     });
@@ -33,7 +33,7 @@ export default class EventsApiService extends ApiService {
   deleteEvent = async (event) => (
     await this._load({
       url: `points/${ event.id }`,
-      method: HTTPMethods.DELETE
+      method: HTTPMethod.DELETE
     })
   );
 

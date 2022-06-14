@@ -18,8 +18,8 @@ export default class InfoPresenter {
   #eventModel = null;
   #allOffers = null;
 
-  constructor(eventsModel) {
-    this.#eventModel = eventsModel;
+  constructor(eventModel) {
+    this.#eventModel = eventModel;
   }
 
   init = () => {

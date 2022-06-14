@@ -170,28 +170,6 @@ export default class EventEditView extends AbstractStatefulView {
     return createEventEditTemplate(this._state, this.#allOffers, this.#allDestinations);
   }
 
-  static convertEventToState = (event) => {
-    const isNewEvent = !(event.destination && event.basePrice);
-    return {
-      ...event,
-      isNewEvent,
-      id: isNewEvent ? '' : event.id,
-      offers: isNewEvent ? [] : event.offers,
-      isDisabled: false,
-      isSaving: false,
-      isDeleting: false,
-    };
-  };
-
-  static convertStateToTask = (state) => {
-    const event = { ...state };
-    delete event.isNewEvent;
-    delete event.isDisabled;
-    delete event.isDeleting;
-    delete event.isSaving;
-    return event;
-  };
-
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
@@ -332,5 +310,27 @@ export default class EventEditView extends AbstractStatefulView {
   #formDeleteClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.deleteEvent(EventEditView.convertStateToTask(this._state));
+  };
+
+  static convertEventToState = (event) => {
+    const isNewEvent = !(event.destination && event.basePrice);
+    return {
+      ...event,
+      isNewEvent,
+      id: isNewEvent ? '' : event.id,
+      offers: isNewEvent ? [] : event.offers,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
+  };
+
+  static convertStateToTask = (state) => {
+    const event = { ...state };
+    delete event.isNewEvent;
+    delete event.isDisabled;
+    delete event.isDeleting;
+    delete event.isSaving;
+    return event;
   };
 }

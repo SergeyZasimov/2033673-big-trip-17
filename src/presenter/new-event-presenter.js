@@ -26,13 +26,13 @@ export default class NewEventPresenter {
 
   init = () => {
     this.#newEventButtonComponent = new NewEventButtonView();
-    this.#newEventButtonComponent.setNewEventClickHandler(this.#handleNewEventClick);
+    this.#newEventButtonComponent.setNewEventClickHandler(this.#newEventClickHandler);
     render(this.#newEventButtonComponent, this.#newEventButtonContainer);
   };
 
   destroy = () => {
     remove(this.#eventEditComponent);
-    document.removeEventListener('click', this.#onEscKeydownHandler);
+    document.removeEventListener('click', this.#escKeyDownHandler);
     this.#newEventButtonComponent.element.removeAttribute('disabled');
   };
 
@@ -54,19 +54,19 @@ export default class NewEventPresenter {
     this.#eventEditComponent.shake(resetFormState);
   };
 
-  #handleNewEventClick = () => {
+  #newEventClickHandler = () => {
     this.#eventEditComponent = new EventEditView(DEFAULT_EVENT, this.#allOffers, this.#allDestinations);
 
-    this.#eventEditComponent.setFormSubmitHandler(this.#handleSubmitClick);
-    this.#eventEditComponent.setCloseFormHandler(this.#handleResetClick);
-    this.#eventEditComponent.setResetHandler(this.#handleResetClick);
-    document.addEventListener('keydown', this.#onEscKeydownHandler);
+    this.#eventEditComponent.setFormSubmitHandler(this.#submitClickHandler);
+    this.#eventEditComponent.setCloseFormHandler(this.#resetClickHandler);
+    this.#eventEditComponent.setResetHandler(this.#resetClickHandler);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#newEventButtonComponent.element.setAttribute('disabled', true);
 
     this.#createNewEventForm(this.#eventEditComponent);
   };
 
-  #handleSubmitClick = (event) => {
+  #submitClickHandler = (event) => {
     this.#changeData(
       UserAction.ADD_EVENT,
       UpdateType.MAJOR,
@@ -75,11 +75,11 @@ export default class NewEventPresenter {
     this.destroy();
   };
 
-  #handleResetClick = () => {
+  #resetClickHandler = () => {
     this.destroy();
   };
 
-  #onEscKeydownHandler = (evt) => {
+  #escKeyDownHandler = (evt) => {
     if (evt.key === 'Esc' || evt.key === 'Escape') {
       evt.preventDefault();
       this.destroy();

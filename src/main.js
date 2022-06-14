@@ -10,24 +10,24 @@ import InfoPresenter from './presenter/info-presenter';
 import SortModel from './model/sort-model';
 import SortPresenter from './presenter/sort-presenter';
 
-const eventsModel = new EventModel(new EventsApiService(END_POINT, AUTHORIZATION));
+const eventModel = new EventModel(new EventsApiService(END_POINT, AUTHORIZATION));
 const filterModel = new FilterModel();
 const sortModel = new SortModel();
 
-const filtersPresenter = new FilterPresenter(eventsModel, filterModel);
-const infoPresenter = new InfoPresenter(eventsModel);
+const filterPresenter = new FilterPresenter(eventModel, filterModel);
+const infoPresenter = new InfoPresenter(eventModel);
 const sortPresenter = new SortPresenter(sortModel);
 
 const appPresenter = new AppPresenter(
-  filtersPresenter,
+  filterPresenter,
   infoPresenter,
   sortPresenter,
-  eventsModel,
+  eventModel,
   filterModel,
   sortModel,
 );
 
 OfferModel.init()
   .then(() => DestinationModel.init())
-  .then(() => eventsModel.init());
+  .then(() => eventModel.init());
 appPresenter.init();

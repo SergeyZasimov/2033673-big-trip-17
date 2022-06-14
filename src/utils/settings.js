@@ -49,7 +49,7 @@ const UpdateType = {
   INIT: 'INIT,'
 };
 
-const HTTPMethods = {
+const HTTPMethod = {
   GET: 'GET',
   PUT: 'PUT',
   POST: 'POST',
@@ -72,6 +72,6 @@ export {
   UpdateType,
   AUTHORIZATION,
   END_POINT,
-  HTTPMethods,
+  HTTPMethod,
   BlockerTimeLimit,
 };
