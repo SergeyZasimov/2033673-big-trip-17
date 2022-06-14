@@ -3,7 +3,7 @@ import NoEventsView from '../view/no-events-view';
 import { RenderPosition, render, remove } from '../framework/render';
 import EventPresenter from './event-presenter';
 import { timeCompare, priceCompare, dayCompare } from '../utils/sort';
-import { BlockerTimeLimit, SortType, UpdateType, UserAction } from '../utils/settings';
+import { BlockerTimeLimit, FilterType, SortType, UpdateType, UserAction } from '../utils/settings';
 import { filters } from '../utils/filter';
 import NewEventPresenter from './new-event-presenter';
 import LoadingView from '../view/loading-view';
@@ -69,6 +69,23 @@ export default class AppPresenter {
     render(this.#loadingComponent, this.#mainBoard, RenderPosition.AFTERBEGIN);
   };
 
+  #createNewEventForm = (newEventForm) => {
+    if (!this.events.length) {
+      remove(this.#noEventsComponent);
+      this.#createEventsList();
+      render(newEventForm, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
+    } else {
+      this.#filtersModel.setFilterType(UpdateType.FILTER_MINOR, FilterType.EVERYTHING);
+      render(newEventForm, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
+    }
+  };
+
+  #createEventsList = () => {
+    remove(this.#eventsListComponent);
+    this.#eventsListComponent = new EventsListView();
+    render(this.#eventsListComponent, this.#mainBoard);
+  };
+
   #createEvent = (event) => {
     const eventPresenter = new EventPresenter(
       this.#eventsListComponent.element,
@@ -87,12 +104,12 @@ export default class AppPresenter {
     }
 
     if (!this.events.length) {
-      remove(this.#sortPresenter.removeSortComponent);
+      this.#sortPresenter.removeSortComponent();
       this.#createNoEvents();
     } else {
       remove(this.#noEventsComponent);
       this.#sortPresenter.init();
-      render(this.#eventsListComponent, this.#mainBoard);
+      this.#createEventsList();
       this.events.forEach((event) => this.#createEvent(event));
     }
   };
@@ -134,9 +151,9 @@ export default class AppPresenter {
         this.#infoPresenter.init();
 
         this.#newEventPresenter = new NewEventPresenter(
-          this.#eventsListComponent.element,
           this.#handleViewAction,
-          this.#filtersModel);
+          this.#createNewEventForm,
+          this.#createNoEvents);
         this.#newEventPresenter.init();
 
         this.#filtersPresenter.init();
