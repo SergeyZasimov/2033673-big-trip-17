@@ -5,7 +5,6 @@ import { UpdateType } from '../utils/settings';
 
 const { mainBoard } = getElements();
 
-
 export default class SortPresenter {
   #mainBoard = mainBoard;
   #sortComponent = null;
@@ -19,12 +18,12 @@ export default class SortPresenter {
     remove(this.#sortComponent);
     this.#sortComponent = new SortView(this.#sortModel.sortType);
     render(this.#sortComponent, this.#mainBoard);
-    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
+    this.#sortComponent.setSortTypeChangeHandler(this.#sortTypeChangeHandler);
   };
 
   removeSortComponent = () => remove(this.#sortComponent);
 
-  #handleSortTypeChange = (sortType) => {
+  #sortTypeChangeHandler = (sortType) => {
     if (this.#sortModel.sortType === sortType) {
       return;
     }

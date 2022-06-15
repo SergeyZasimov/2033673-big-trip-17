@@ -30,8 +30,8 @@ export default class EventPresenter {
 
     const prevEventComponent = this.#eventComponent;
     this.#eventComponent = new EventView(this.#event, this.#allOffers);
-    this.#eventComponent.setEditClickHandler(this.#handleEditClick);
-    this.#eventComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
+    this.#eventComponent.setEditClickHandler(this.#editClickHandler);
+    this.#eventComponent.setFavoriteClickHandler(this.#favoriteClickHandler);
 
     if (prevEventComponent === null) {
       render(this.#eventComponent, this.#eventsListContainer);
@@ -98,11 +98,11 @@ export default class EventPresenter {
   #replaceEventToEdit = () => {
     this.#eventEditComponent = new EventEditView(this.#event, this.#allOffers, this.#allDestinations);
 
-    this.#eventEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
-    this.#eventEditComponent.setCloseFormHandler(this.#handleCloseForm);
-    this.#eventEditComponent.setResetHandler(this.#handleDeleteClick);
+    this.#eventEditComponent.setFormSubmitHandler(this.#formSubmitHandler);
+    this.#eventEditComponent.setCloseFormHandler(this.#closeFormHandler);
+    this.#eventEditComponent.setResetHandler(this.#deleteClickHandler);
 
-    document.addEventListener('keydown', this.#onEscKeyDown);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
 
     this.#changeMode();
     this.#mode = Mode.EDITING;
@@ -115,13 +115,13 @@ export default class EventPresenter {
     replace(this.#eventComponent, this.#eventEditComponent);
   };
 
-  #handleEditClick = () => {
+  #editClickHandler = () => {
     this.#replaceEventToEdit();
     this.#removeNewEventForm();
   };
 
-  #handleFormSubmit = (event) => {
-    document.removeEventListener('keydown', this.#onEscKeyDown);
+  #formSubmitHandler = (event) => {
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#changeData(
       UserAction.UPDATE_EVENT,
       UpdateType.PATCH,
@@ -129,28 +129,28 @@ export default class EventPresenter {
     );
   };
 
-  #handleCloseForm = () => {
+  #closeFormHandler = () => {
     this.#replaceEditToEvent();
     this.#mode = Mode.DEFAULT;
-    document.removeEventListener('keydown', this.#onEscKeyDown);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
-  #onEscKeyDown = (evt) => {
+  #escKeyDownHandler = (evt) => {
     if (evt.key === 'Esc' || evt.key === 'Escape') {
       evt.preventDefault();
       this.#replaceEditToEvent();
-      document.removeEventListener('keydown', this.#onEscKeyDown);
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   };
 
-  #handleFavoriteClick = () => {
+  #favoriteClickHandler = () => {
     this.#changeData(
       UserAction.UPDATE_EVENT,
       UpdateType.PATCH,
       { ...this.#event, isFavorite: !this.#event.isFavorite });
   };
 
-  #handleDeleteClick = (event) => {
+  #deleteClickHandler = (event) => {
     this.#changeData(
       UserAction.DELETE_EVENT,
       UpdateType.MAJOR,

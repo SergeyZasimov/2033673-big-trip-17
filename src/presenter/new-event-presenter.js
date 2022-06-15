@@ -1,5 +1,5 @@
-import { remove, render, RenderPosition } from '../framework/render';
-import { DEFAULT_EVENT, FilterType, UpdateType, UserAction } from '../utils/settings';
+import { remove, render } from '../framework/render';
+import { DEFAULT_EVENT, UpdateType, UserAction } from '../utils/settings';
 import EventEditView from '../view/event-edit-view';
 import OfferModel from '../model/offer-model';
 import DestinationModel from '../model/destination-model';
@@ -11,28 +11,27 @@ const { headerBoard } = getElements();
 export default class NewEventPresenter {
   #newEventButtonComponent = null;
   #newEventButtonContainer = headerBoard;
-  #eventListComponent = null;
   #eventEditComponent = null;
-  #filtersModel = null;
   #changeData = null;
+  #newEventFormHandler = null;
   #allOffers = OfferModel.offers;
   #allDestinations = DestinationModel.destinations;
 
-  constructor(eventListComponent, changeData, filterModel) {
-    this.#eventListComponent = eventListComponent;
+  constructor(changeData, newEventFomHandler) {
     this.#changeData = changeData;
-    this.#filtersModel = filterModel;
+    this.#newEventFormHandler = newEventFomHandler;
   }
 
   init = () => {
     this.#newEventButtonComponent = new NewEventButtonView();
-    this.#newEventButtonComponent.setNewEventClickHandler(this.#handleNewEventClick);
+    this.#newEventButtonComponent.setNewEventClickHandler(this.#newEventButtonClickHandler);
     render(this.#newEventButtonComponent, this.#newEventButtonContainer);
   };
 
   destroy = () => {
+    this.#newEventFormHandler('destroy');
     remove(this.#eventEditComponent);
-    document.removeEventListener('click', this.#onEscKeydownHandler);
+    document.removeEventListener('click', this.#escKeyDownHandler);
     this.#newEventButtonComponent.element.removeAttribute('disabled');
   };
 
@@ -54,24 +53,20 @@ export default class NewEventPresenter {
     this.#eventEditComponent.shake(resetFormState);
   };
 
-  #handleNewEventClick = () => {
+  #newEventButtonClickHandler = () => {
     this.#eventEditComponent = new EventEditView(DEFAULT_EVENT, this.#allOffers, this.#allDestinations);
 
-    this.#eventEditComponent.setFormSubmitHandler(this.#handleSubmitClick);
-    this.#eventEditComponent.setCloseFormHandler(this.#handleResetClick);
-    this.#eventEditComponent.setResetHandler(this.#handleResetClick);
-
-    render(this.#eventEditComponent, this.#eventListComponent, RenderPosition.AFTERBEGIN);
-
-    document.addEventListener('keydown', this.#onEscKeydownHandler);
-
+    this.#eventEditComponent.setFormSubmitHandler(this.#submitClickHandler);
+    this.#eventEditComponent.setCloseFormHandler(this.#resetClickHandler);
+    this.#eventEditComponent.setResetHandler(this.#resetClickHandler);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#newEventButtonComponent.element.setAttribute('disabled', true);
 
-    this.#filtersModel.setFilterType(UpdateType.FILTER_MINOR, FilterType.EVERYTHING);
+    this.#newEventFormHandler('create', this.#eventEditComponent);
   };
 
-  #handleSubmitClick = (event) => {
-    this.#changeData(
+  #submitClickHandler = async (event) => {
+    await this.#changeData(
       UserAction.ADD_EVENT,
       UpdateType.MAJOR,
       event
@@ -79,11 +74,11 @@ export default class NewEventPresenter {
     this.destroy();
   };
 
-  #handleResetClick = () => {
+  #resetClickHandler = () => {
     this.destroy();
   };
 
-  #onEscKeydownHandler = (evt) => {
+  #escKeyDownHandler = (evt) => {
     if (evt.key === 'Esc' || evt.key === 'Escape') {
       evt.preventDefault();
       this.destroy();

@@ -5,7 +5,6 @@ export default class DestinationModel {
   static #destinations = null;
   static #destinationsApiService = new DestinationsApiService(END_POINT, AUTHORIZATION);
 
-
   static init = async () => {
     try {
       DestinationModel.#destinations = await DestinationModel.#destinationsApiService.destinations;

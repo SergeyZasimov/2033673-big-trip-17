@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import { getEditTime } from './date-time';
 
 const EVENT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
@@ -11,8 +10,8 @@ const DEFAULT_EVENT = {
   type: 'taxi',
   destination: null,
   basePrice: '',
-  dateFrom: getEditTime(dayjs()),
-  dateTo: getEditTime(dayjs()),
+  dateFrom: dayjs().toISOString(),
+  dateTo: dayjs().toISOString(),
   offers: [],
   isFavorite: false
 };
@@ -50,7 +49,7 @@ const UpdateType = {
   INIT: 'INIT,'
 };
 
-const HTTPMethods = {
+const HTTPMethod = {
   GET: 'GET',
   PUT: 'PUT',
   POST: 'POST',
@@ -62,7 +61,6 @@ const BlockerTimeLimit = {
   UPPER_LIMIT: 1000
 };
 
-
 export {
   EVENT_TYPES,
   DEFAULT_EVENT,
@@ -73,6 +71,6 @@ export {
   UpdateType,
   AUTHORIZATION,
   END_POINT,
-  HTTPMethods,
+  HTTPMethod,
   BlockerTimeLimit,
 };

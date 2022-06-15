@@ -30,11 +30,11 @@ export default class FilterPresenter {
       remove(this.#filtersComponent);
     }
     this.#filtersComponent = new FiltersView(this.filters, this.#filtersModel.filterType);
-    this.#filtersComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
+    this.#filtersComponent.setFilterTypeChangeHandler(this.#filterTypeChangeHandler);
     render(this.#filtersComponent, this.#filtersContainer);
   };
 
-  #handleFilterTypeChange = (filterType) => {
+  #filterTypeChangeHandler = (filterType) => {
     if (this.#filtersModel.filterType === filterType) {
       return;
     }

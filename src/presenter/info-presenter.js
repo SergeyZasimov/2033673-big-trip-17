@@ -18,8 +18,8 @@ export default class InfoPresenter {
   #eventModel = null;
   #allOffers = null;
 
-  constructor(eventsModel) {
-    this.#eventModel = eventsModel;
+  constructor(eventModel) {
+    this.#eventModel = eventModel;
   }
 
   init = () => {
@@ -33,11 +33,19 @@ export default class InfoPresenter {
     render(this.#infoComponent, this.#infoContainer, RenderPosition.AFTERBEGIN);
   };
 
-  #getTitle = (events) => (
-    events.length > 3
-      ? `${ events[0].destination.name } &mdash; ... &mdash; ${ events[events.length - 1].destination.name }`
-      : `${ events[0].destination.name } &mdash; ${ events[1].destination.name } &mdash; ${ events[2].destination.name }`
-  );
+  #getTitle = (events) => {
+    switch (events.length) {
+      case(0):
+        return 'No routes';
+      case(1):
+        return `${ events[0].destination.name }`;
+      case(2):
+        return `${ events[0].destination.name } &mdash; ${ events[1].destination.name } `;
+      case(3):
+        return `${ events[0].destination.name } &mdash; ${ events[1].destination.name } &mdash; ${ events[2].destination.name }`;
+    }
+    return `${ events[0].destination.name } &mdash; ... &mdash; ${ events[events.length - 1].destination.name }`;
+  };
 
   #getCost = (events) => (
     events.reduce((cost, event) => {
@@ -57,9 +65,12 @@ export default class InfoPresenter {
   };
 
   #getDates = (events) => {
-    const beginDate = events[0].dateFrom;
-    const endDate = events[events.length - 1].dateTo;
+    const beginDate = events[0]?.dateFrom;
+    const endDate = events[events.length - 1]?.dateTo;
 
+    if (!beginDate && !endDate) {
+      return 'no date';
+    }
 
     if (dayjs(beginDate).month() === dayjs(endDate).month()) {
       return `${ getHumanizeDay(beginDate) } &mdash; ${ dayjs(endDate).date() }`;

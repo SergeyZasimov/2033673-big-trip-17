@@ -170,28 +170,6 @@ export default class EventEditView extends AbstractStatefulView {
     return createEventEditTemplate(this._state, this.#allOffers, this.#allDestinations);
   }
 
-  static convertEventToState = (event) => {
-    const isNewEvent = !(event.destination && event.basePrice);
-    return {
-      ...event,
-      isNewEvent,
-      id: isNewEvent ? '' : event.id,
-      offers: isNewEvent ? [] : event.offers,
-      isDisabled: false,
-      isSaving: false,
-      isDeleting: false,
-    };
-  };
-
-  static convertStateToTask = (state) => {
-    const event = { ...state };
-    delete event.isNewEvent;
-    delete event.isDisabled;
-    delete event.isDeleting;
-    delete event.isSaving;
-    return event;
-  };
-
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
@@ -226,7 +204,11 @@ export default class EventEditView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(EventEditView.convertStateToTask(this._state));
+    if (this.#formValidation()) {
+      this._callback.formSubmit(EventEditView.convertStateToTask(this._state));
+    } else {
+      this.shake();
+    }
   };
 
   #closeFormHandler = () => {
@@ -260,7 +242,14 @@ export default class EventEditView extends AbstractStatefulView {
 
   #inputPriceHandler = (evt) => {
     evt.preventDefault();
-    this._state = { ...this._state, basePrice: evt.target.value };
+    const updatePrice = () => {
+      this._state = { ...this._state, basePrice: evt.target.value };
+    };
+    if (this.#priceValidate(evt.target.value)) {
+      updatePrice();
+    } else {
+      this.shake(updatePrice);
+    }
   };
 
   #changeOfferHandler = (evt) => {
@@ -278,29 +267,35 @@ export default class EventEditView extends AbstractStatefulView {
     }
   };
 
-  #dateValidate = (dateA, dateB, callback) => {
+  #dateValidate = (dateA, dateB) => {
     const compare = dayjs(dateB).diff(dayjs(dateA));
-    if (compare > 0) {
-      callback();
+    return compare > 0;
+  };
+
+  #priceValidate = (price) => price >= 0;
+
+  #destinationValidate = (destination) => Boolean(destination);
+
+  #formValidation = () => this.#dateValidate(this._state.dateFrom, this._state.dateTo) &&
+      this.#priceValidate(this._state.basePrice) &&
+      this.#destinationValidate(this._state.destination);
+
+  #changeDateFromHandler = (dateFrom) => {
+    const updateDateFrom = () => this.updateElement({ dateFrom: dayjs(dateFrom).toISOString() });
+    if (this.#dateValidate(dateFrom, this._state.dateTo)) {
+      updateDateFrom();
     } else {
-      this.shake();
+      this.shake(updateDateFrom);
     }
   };
 
-  #changeDateFromHandler = (dateFrom) => {
-    this.#dateValidate(dateFrom, this._state.dateTo, () => {
-      this.updateElement(
-        { dateFrom: dayjs(dateFrom).toISOString() }
-      );
-    });
-  };
-
   #changeDateToHandler = (dateTo) => {
-    this.#dateValidate(this._state.dateFrom, dateTo, () => {
-      this.updateElement(
-        { dateTo: dayjs(dateTo).toISOString() }
-      );
-    });
+    const updateDateTo = () => this.updateElement({ dateTo: dayjs(dateTo).toISOString() });
+    if (this.#dateValidate(this._state.dateFrom, dateTo)) {
+      updateDateTo();
+    } else {
+      this.shake(updateDateTo);
+    }
   };
 
   #setDatePicker = () => {
@@ -332,5 +327,27 @@ export default class EventEditView extends AbstractStatefulView {
   #formDeleteClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.deleteEvent(EventEditView.convertStateToTask(this._state));
+  };
+
+  static convertEventToState = (event) => {
+    const isNewEvent = !(event.destination && event.basePrice);
+    return {
+      ...event,
+      isNewEvent,
+      id: isNewEvent ? '' : event.id,
+      offers: isNewEvent ? [] : event.offers,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
+  };
+
+  static convertStateToTask = (state) => {
+    const event = { ...state };
+    delete event.isNewEvent;
+    delete event.isDisabled;
+    delete event.isDeleting;
+    delete event.isSaving;
+    return event;
   };
 }
