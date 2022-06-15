@@ -22,9 +22,7 @@ const getDuration = (beginDate, endDate) => {
     return `${ durationFormat(hours) }H ${ durationFormat(minutes) }M`;
   }
   return `${ durationFormat(minutes) }M`;
-
 };
-
 
 export {
   getEditTime,

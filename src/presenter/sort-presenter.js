@@ -5,7 +5,6 @@ import { UpdateType } from '../utils/settings';
 
 const { mainBoard } = getElements();
 
-
 export default class SortPresenter {
   #mainBoard = mainBoard;
   #sortComponent = null;

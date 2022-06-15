@@ -61,7 +61,6 @@ const BlockerTimeLimit = {
   UPPER_LIMIT: 1000
 };
 
-
 export {
   EVENT_TYPES,
   DEFAULT_EVENT,

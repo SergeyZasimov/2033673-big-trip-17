@@ -276,11 +276,9 @@ export default class EventEditView extends AbstractStatefulView {
 
   #destinationValidate = (destination) => Boolean(destination);
 
-  #formValidation = () => {
-    return this.#dateValidate(this._state.dateFrom, this._state.dateTo) &&
+  #formValidation = () => this.#dateValidate(this._state.dateFrom, this._state.dateTo) &&
       this.#priceValidate(this._state.basePrice) &&
       this.#destinationValidate(this._state.destination);
-  };
 
   #changeDateFromHandler = (dateFrom) => {
     const updateDateFrom = () => this.updateElement({ dateFrom: dayjs(dateFrom).toISOString() });

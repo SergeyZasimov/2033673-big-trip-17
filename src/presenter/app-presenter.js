@@ -69,26 +69,6 @@ export default class AppPresenter {
     render(this.#loadingComponent, this.#mainBoard, RenderPosition.AFTERBEGIN);
   };
 
-  #newEventFormHandler = (action, newEventForm = null) => {
-    switch (action) {
-      case 'create':
-        if (!this.events.length) {
-          remove(this.#noEventsComponent);
-          this.#createEventsList();
-          render(newEventForm, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
-        } else {
-          this.#filterModel.setFilterType(UpdateType.FILTER_MINOR, FilterType.EVERYTHING);
-          render(newEventForm, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
-        }
-        break;
-      case 'destroy':
-        if (!this.#eventModel.events.length) {
-          this.#createNoEvents(FilterType.EVERYTHING);
-        }
-        break;
-    }
-  };
-
   #createEventsList = () => {
     remove(this.#eventsListComponent);
     this.#eventsListComponent = new EventsListView();
@@ -199,5 +179,25 @@ export default class AppPresenter {
         break;
     }
     this.#uiBlocker.unblock();
+  };
+
+  #newEventFormHandler = (action, newEventForm = null) => {
+    switch (action) {
+      case 'create':
+        if (!this.events.length) {
+          remove(this.#noEventsComponent);
+          this.#createEventsList();
+          render(newEventForm, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
+        } else {
+          this.#filterModel.setFilterType(UpdateType.FILTER_MINOR, FilterType.EVERYTHING);
+          render(newEventForm, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
+        }
+        break;
+      case 'destroy':
+        if (!this.#eventModel.events.length) {
+          this.#createNoEvents(FilterType.EVERYTHING);
+        }
+        break;
+    }
   };
 }

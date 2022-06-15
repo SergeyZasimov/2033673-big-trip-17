@@ -61,6 +61,7 @@ export default class NewEventPresenter {
     this.#eventEditComponent.setResetHandler(this.#resetClickHandler);
     document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#newEventButtonComponent.element.setAttribute('disabled', true);
+
     this.#newEventFormHandler('create', this.#eventEditComponent);
   };
 
