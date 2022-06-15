@@ -204,7 +204,11 @@ export default class EventEditView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(EventEditView.convertStateToTask(this._state));
+    if (this.#formValidation()) {
+      this._callback.formSubmit(EventEditView.convertStateToTask(this._state));
+    } else {
+      this.shake();
+    }
   };
 
   #closeFormHandler = () => {
@@ -238,7 +242,14 @@ export default class EventEditView extends AbstractStatefulView {
 
   #inputPriceHandler = (evt) => {
     evt.preventDefault();
-    this._state = { ...this._state, basePrice: evt.target.value };
+    const updatePrice = () => {
+      this._state = { ...this._state, basePrice: evt.target.value };
+    };
+    if (this.#priceValidate(evt.target.value)) {
+      updatePrice();
+    } else {
+      this.shake(updatePrice);
+    }
   };
 
   #changeOfferHandler = (evt) => {
@@ -256,29 +267,37 @@ export default class EventEditView extends AbstractStatefulView {
     }
   };
 
-  #dateValidate = (dateA, dateB, callback) => {
+  #dateValidate = (dateA, dateB) => {
     const compare = dayjs(dateB).diff(dayjs(dateA));
-    if (compare > 0) {
-      callback();
-    } else {
-      this.shake();
-    }
+    return compare > 0;
+  };
+
+  #priceValidate = (price) => price >= 0;
+
+  #destinationValidate = (destination) => Boolean(destination);
+
+  #formValidation = () => {
+    return this.#dateValidate(this._state.dateFrom, this._state.dateTo) &&
+      this.#priceValidate(this._state.basePrice) &&
+      this.#destinationValidate(this._state.destination);
   };
 
   #changeDateFromHandler = (dateFrom) => {
-    this.#dateValidate(dateFrom, this._state.dateTo, () => {
-      this.updateElement(
-        { dateFrom: dayjs(dateFrom).toISOString() }
-      );
-    });
+    const updateDateFrom = () => this.updateElement({ dateFrom: dayjs(dateFrom).toISOString() });
+    if (this.#dateValidate(dateFrom, this._state.dateTo)) {
+      updateDateFrom();
+    } else {
+      this.shake(updateDateFrom);
+    }
   };
 
   #changeDateToHandler = (dateTo) => {
-    this.#dateValidate(this._state.dateFrom, dateTo, () => {
-      this.updateElement(
-        { dateTo: dayjs(dateTo).toISOString() }
-      );
-    });
+    const updateDateTo = () => this.updateElement({ dateTo: dayjs(dateTo).toISOString() });
+    if (this.#dateValidate(this._state.dateFrom, dateTo)) {
+      updateDateTo();
+    } else {
+      this.shake(updateDateTo);
+    }
   };
 
   #setDatePicker = () => {
