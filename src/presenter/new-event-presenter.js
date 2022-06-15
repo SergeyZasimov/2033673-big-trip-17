@@ -13,24 +13,23 @@ export default class NewEventPresenter {
   #newEventButtonContainer = headerBoard;
   #eventEditComponent = null;
   #changeData = null;
-  #createNewEventForm = null;
-  #createNoEvents = null;
+  #newEventFormHandler = null;
   #allOffers = OfferModel.offers;
   #allDestinations = DestinationModel.destinations;
 
-  constructor(changeData, createNewEventForm, createNoEvents) {
+  constructor(changeData, newEventFomHandler) {
     this.#changeData = changeData;
-    this.#createNewEventForm = createNewEventForm;
-    this.#createNoEvents = createNoEvents;
+    this.#newEventFormHandler = newEventFomHandler;
   }
 
   init = () => {
     this.#newEventButtonComponent = new NewEventButtonView();
-    this.#newEventButtonComponent.setNewEventClickHandler(this.#newEventClickHandler);
+    this.#newEventButtonComponent.setNewEventClickHandler(this.#newEventButtonClickHandler);
     render(this.#newEventButtonComponent, this.#newEventButtonContainer);
   };
 
   destroy = () => {
+    this.#newEventFormHandler('destroy');
     remove(this.#eventEditComponent);
     document.removeEventListener('click', this.#escKeyDownHandler);
     this.#newEventButtonComponent.element.removeAttribute('disabled');
@@ -54,7 +53,7 @@ export default class NewEventPresenter {
     this.#eventEditComponent.shake(resetFormState);
   };
 
-  #newEventClickHandler = () => {
+  #newEventButtonClickHandler = () => {
     this.#eventEditComponent = new EventEditView(DEFAULT_EVENT, this.#allOffers, this.#allDestinations);
 
     this.#eventEditComponent.setFormSubmitHandler(this.#submitClickHandler);
@@ -62,12 +61,11 @@ export default class NewEventPresenter {
     this.#eventEditComponent.setResetHandler(this.#resetClickHandler);
     document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#newEventButtonComponent.element.setAttribute('disabled', true);
-
-    this.#createNewEventForm(this.#eventEditComponent);
+    this.#newEventFormHandler('create', this.#eventEditComponent);
   };
 
-  #submitClickHandler = (event) => {
-    this.#changeData(
+  #submitClickHandler = async (event) => {
+    await this.#changeData(
       UserAction.ADD_EVENT,
       UpdateType.MAJOR,
       event

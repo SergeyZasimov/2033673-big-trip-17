@@ -59,8 +59,8 @@ export default class AppPresenter {
     this.#renderEventsList();
   };
 
-  #createNoEvents = () => {
-    this.#noEventsComponent = new NoEventsView(this.#filterModel.filterType);
+  #createNoEvents = (filterType) => {
+    this.#noEventsComponent = new NoEventsView(filterType);
     render(this.#noEventsComponent, this.#mainBoard, RenderPosition.AFTERBEGIN);
   };
 
@@ -69,14 +69,23 @@ export default class AppPresenter {
     render(this.#loadingComponent, this.#mainBoard, RenderPosition.AFTERBEGIN);
   };
 
-  #createNewEventForm = (newEventForm) => {
-    if (!this.events.length) {
-      remove(this.#noEventsComponent);
-      this.#createEventsList();
-      render(newEventForm, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
-    } else {
-      this.#filterModel.setFilterType(UpdateType.FILTER_MINOR, FilterType.EVERYTHING);
-      render(newEventForm, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
+  #newEventFormHandler = (action, newEventForm = null) => {
+    switch (action) {
+      case 'create':
+        if (!this.events.length) {
+          remove(this.#noEventsComponent);
+          this.#createEventsList();
+          render(newEventForm, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
+        } else {
+          this.#filterModel.setFilterType(UpdateType.FILTER_MINOR, FilterType.EVERYTHING);
+          render(newEventForm, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
+        }
+        break;
+      case 'destroy':
+        if (!this.#eventModel.events.length) {
+          this.#createNoEvents(FilterType.EVERYTHING);
+        }
+        break;
     }
   };
 
@@ -105,7 +114,7 @@ export default class AppPresenter {
 
     if (!this.events.length) {
       this.#sortPresenter.removeSortComponent();
-      this.#createNoEvents();
+      this.#createNoEvents(this.#filterModel.filterType);
     } else {
       remove(this.#noEventsComponent);
       this.#sortPresenter.init();
@@ -152,8 +161,7 @@ export default class AppPresenter {
 
         this.#newEventPresenter = new NewEventPresenter(
           this.#viewActionHandler,
-          this.#createNewEventForm,
-          this.#createNoEvents);
+          this.#newEventFormHandler);
         this.#newEventPresenter.init();
 
         this.#filterPresenter.init();

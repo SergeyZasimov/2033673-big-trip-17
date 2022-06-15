@@ -36,7 +36,7 @@ export default class InfoPresenter {
   #getTitle = (events) => {
     switch (events.length) {
       case(0):
-        return '';
+        return 'No routes';
       case(1):
         return `${ events[0].destination.name }`;
       case(2):
